@@ -41,7 +41,8 @@
 
       function preload() {
         this.load.image("background", "assets/sky.png");
-        this.load.image("player", "assets/star.png");
+        this.load.image("player", "assets/temptomte.png");
+        this.load.image("projectile", "assets/star.png");
       }
 
       function create() {
@@ -74,7 +75,7 @@
       }
 
       function shoot(x, y, vx, vy) {
-        var projectile = projectiles.create(x, y, "player");
+        var projectile = projectiles.create(x, y, "projectile");
         projectile.setVelocityX(vx + 0.2 * player.body.velocity.x);
         projectile.setVelocityY(vy + 0.2 * player.body.velocity.y);
       }
