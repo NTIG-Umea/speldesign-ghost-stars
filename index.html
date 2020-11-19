@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>TDS - test</title>
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.11.0/dist/phaser.js"></script>
+    <style type="text/css">
+      body {
+        margin: 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <script type="text/javascript">
+      var config = {
+        type: Phaser.AUTO,
+        width: 800,
+        height: 600,
+        physics: {
+          default: "arcade",
+          arcade: {
+            gravity: { y: 0 },
+            debug: false,
+          },
+        },
+        scene: {
+          preload: preload,
+          create: create,
+          update: update,
+        },
+      };
+
+      var player;
+      var cursors;
+      var playerSpeed = 2.5;
+      var projectileSpeed = 4;
+      var projectiles;
+
+      const game = new Phaser.Game(config);
+
+      function preload() {
+        this.load.image("background", "assets/sky.png");
+        this.load.image("player", "assets/star.png");
+      }
+
+      function create() {
+        //Background and camera
+        this.add.image(400, 300, "background");
+
+        //Player stuff
+        player = this.physics.add.sprite(400, 300, "player");
+        player.setCollideWorldBounds(true);
+
+        //Projectile stuff
+        projectiles = this.physics.add.group();
+
+        //Input
+        cursors = this.input.keyboard.createCursorKeys();
+        this.input.on("pointerdown", (pointer) => {
+          let angle = Phaser.Math.Angle.Between(
+            player.x,
+            player.y,
+            pointer.x,
+            pointer.y
+          );
+
+          let v = 100 * projectileSpeed;
+          let vx = v * Math.cos(angle);
+          let vy = v * Math.sin(angle);
+
+          shoot(player.x, player.y, vx, vy);
+        });
+      }
+
+      function shoot(x, y, vx, vy) {
+        var projectile = projectiles.create(x, y, "player");
+        projectile.setVelocityX(vx + 0.2 * player.body.velocity.x);
+        projectile.setVelocityY(vy + 0.2 * player.body.velocity.y);
+      }
+
+      function update() {
+        /* Player movement
+         *  the first variables decide the direction the player is moving.
+         *  ex, if playerMovingX is -1 the player moves left, if its 1 they move right and if its 0 it stays in place.
+         */
+
+        let playerMovingX = 0;
+        let playerMovingY = 0;
+
+        //Checks if a specific direction is pressed, then adds or subracts from that direction by 1.
+        if (cursors.left.isDown) {
+          playerMovingX += -1;
+        }
+        if (cursors.right.isDown) {
+          playerMovingX += 1;
+        }
+        if (cursors.up.isDown) {
+          playerMovingY += -1;
+        }
+        if (cursors.down.isDown) {
+          playerMovingY += 1;
+        }
+
+        /* Movement algoritm
+         *  if the player is moving on both the X and Y axis then divide the movement algorithm by the square root of 2.
+         *  This is done to prevent the player from moving faster on the hypotenuse.
+         */
+        if (!(playerMovingX === 0) && !(playerMovingY === 0)) {
+          player.setVelocityX((playerMovingX * playerSpeed * 100) / Math.SQRT2);
+          player.setVelocityY((playerMovingY * playerSpeed * 100) / Math.SQRT2);
+        } else {
+          player.setVelocityX(playerMovingX * playerSpeed * 100);
+          player.setVelocityY(playerMovingY * playerSpeed * 100);
+        }
+      }
+    </script>
+  </body>
+</html>
