@@ -90,8 +90,8 @@
 
       function shoot(x, y, vx, vy) {
         var projectile = projectiles.create(x, y, "projectile");
-        projectile.setVelocityX(vx + 0.2 * player.body.velocity.x);
-        projectile.setVelocityY(vy + 0.2 * player.body.velocity.y);
+        projectile.setVelocityX(vx);
+        projectile.setVelocityY(vy);
       }
 
       function update() {
