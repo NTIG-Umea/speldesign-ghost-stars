@@ -19,10 +19,7 @@
         height: 600,
         physics: {
           default: "arcade",
-          arcade: {
-            gravity: { y: 0 },
-            debug: false,
-          },
+          arcade: {},
         },
         scene: {
           preload: preload,
@@ -40,18 +37,27 @@
       const game = new Phaser.Game(config);
 
       function preload() {
-        this.load.image("background", "assets/sky.png");
+        this.load.image("background", "assets/512pxbackground.png");
         this.load.image("player", "assets/temptomte.png");
         this.load.image("projectile", "assets/star.png");
       }
 
       function create() {
         //Background and camera
-        this.add.image(400, 300, "background");
+        this.cameras.main.setBounds(0, 0, 512 * 2, 512 * 2);
+
+        this.add.image(0, 0, "background").setOrigin(0);
+        this.add.image(512, 0, "background").setOrigin(0);
+        this.add.image(512, 512, "background").setOrigin(0);
+        this.add.image(0, 512, "background").setOrigin(0);
 
         //Player stuff
-        player = this.physics.add.sprite(400, 300, "player");
+        player = this.physics.add.sprite(0, 0, "player");
         player.setCollideWorldBounds(true);
+
+        //Camera
+        this.cameras.main.centerToBounds();
+        this.cameras.main.startFollow(player);
 
         //Projectile stuff
         projectiles = this.physics.add.group();
@@ -90,6 +96,9 @@
       }
 
       function update() {
+        //Camera
+        var cam = this.cameras.main;
+
         /* Player movement
          *  the first variables decide the direction the player is moving.
          *  ex, if playerMovingX is -1 the player moves left, if its 1 they move right and if its 0 it stays in place.
