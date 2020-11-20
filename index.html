@@ -56,8 +56,17 @@
         //Projectile stuff
         projectiles = this.physics.add.group();
 
-        //Input
-        cursors = this.input.keyboard.createCursorKeys();
+        /***Player input***/
+
+        //WASD movement
+        cursors = this.input.keyboard.addKeys({
+          up: Phaser.Input.Keyboard.KeyCodes.W,
+          down: Phaser.Input.Keyboard.KeyCodes.S,
+          left: Phaser.Input.Keyboard.KeyCodes.A,
+          right: Phaser.Input.Keyboard.KeyCodes.D,
+        });
+
+        //When the left mosue button is pressed calculate the angle at which the projectile should fire
         this.input.on("pointerdown", (pointer) => {
           let angle = Phaser.Math.Angle.Between(
             player.x,
