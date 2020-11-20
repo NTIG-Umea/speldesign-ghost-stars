@@ -53,10 +53,9 @@
 
         //Player stuff
         player = this.physics.add.sprite(0, 0, "player");
-        player.setCollideWorldBounds(true);
+        //player.setCollideWorldBounds(true);
 
         //Camera
-        this.cameras.main.centerToBounds();
         this.cameras.main.startFollow(player);
 
         //Projectile stuff
@@ -77,8 +76,8 @@
           let angle = Phaser.Math.Angle.Between(
             player.x,
             player.y,
-            pointer.x,
-            pointer.y
+            pointer.x + this.cameras.main.worldView.x,
+            pointer.y + this.cameras.main.worldView.y
           );
 
           let v = 100 * projectileSpeed;
