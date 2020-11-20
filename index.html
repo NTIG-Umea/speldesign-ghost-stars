@@ -30,8 +30,17 @@
 
       var player;
       var cursors;
+      var pointer;
       var playerSpeed = 3;
-      var projectileSpeed = 6;
+
+      /*
+       * 0: Pistol
+       * 1: SMG
+       * 2: Shotgun
+       */
+      var currentWeapon = 0;
+      var weaponCooldown = 0;
+      var projectileSpeed = 8;
       var projectiles;
 
       const game = new Phaser.Game(config);
@@ -53,10 +62,7 @@
 
         //Player stuff
         player = this.physics.add.sprite(0, 0, "player");
-        //player.setCollideWorldBounds(true);
-
-        //Camera
-        // this.cameras.main.startFollow(player);
+        pointer = this.input.activePointer;
 
         //Projectile stuff
         projectiles = this.physics.add.group();
@@ -70,35 +76,46 @@
           left: Phaser.Input.Keyboard.KeyCodes.A,
           right: Phaser.Input.Keyboard.KeyCodes.D,
         });
-
-        //When the left mosue button is pressed calculate the angle at which the projectile should fire
-        this.input.on("pointerdown", (pointer) => {
-          let angle = Phaser.Math.Angle.Between(
-            player.x,
-            player.y,
-            pointer.x + this.cameras.main.worldView.x,
-            pointer.y + this.cameras.main.worldView.y
-          );
-
-          let v = 100 * projectileSpeed;
-          let uv = {
-            x: Math.cos(angle),
-            y: Math.sin(angle),
-          };
-          let vx = v * uv.x;
-          let vy = v * uv.y;
-
-          shoot(player.x, player.y, vx, vy);
-        });
       }
 
       function shoot(x, y, vx, vy) {
-        var projectile = projectiles.create(x, y, "projectile");
-        projectile.setVelocityX(vx);
-        projectile.setVelocityY(vy);
+        switch (currentWeapon) {
+          case 0:
+            if (weaponCooldown === 0) {
+              var projectile = projectiles.create(x, y, "projectile");
+              projectile.setVelocityX(vx);
+              projectile.setVelocityY(vy);
+              weaponCooldown = 20;
+            }
+            break;
+          case 1:
+            if (weaponCooldown === 0) {
+              var projectile = projectiles.create(x, y, "projectile");
+              projectile.setVelocityX(vx + (Math.random() - 0.5) * 50);
+              projectile.setVelocityY(vy + (Math.random() - 0.5) * 50);
+              weaponCooldown = 4;
+            }
+            break;
+          case 2:
+            if (weaponCooldown === 0) {
+              for (var i = 0; i < 6; i++) {
+                var projectile = projectiles.create(x, y, "projectile");
+                projectile.setVelocityX(vx + (Math.random() - 0.5) * 50);
+                projectile.setVelocityY(vy + (Math.random() - 0.5) * 50);
+
+                console.log("hej");
+              }
+              weaponCooldown = 40;
+            }
+            break;
+        }
       }
 
-      function update() {
+      function update(time, delta) {
+        if (weaponCooldown > 0) {
+          weaponCooldown -= 1;
+        }
+
         //Camera
         var cam = this.cameras.main;
 
@@ -138,6 +155,26 @@
 
         //Moves the camero to the players position
         this.cameras.main.centerOn(player.x, player.y);
+
+        //if the mouse is clicked -> shoot
+        if (pointer.isDown) {
+          let angle = Phaser.Math.Angle.Between(
+            player.x,
+            player.y,
+            pointer.x + this.cameras.main.worldView.x,
+            pointer.y + this.cameras.main.worldView.y
+          );
+
+          let v = 100 * projectileSpeed;
+          let uv = {
+            x: Math.cos(angle),
+            y: Math.sin(angle),
+          };
+          let vx = v * uv.x;
+          let vy = v * uv.y;
+
+          shoot(player.x, player.y, vx, vy);
+        }
       }
     </script>
   </body>
