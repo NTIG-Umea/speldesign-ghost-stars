@@ -38,7 +38,7 @@
        * 1: SMG
        * 2: Shotgun
        */
-      var currentWeapon = 0;
+      var weaponActive = 0;
       var weaponCooldown = 0;
       var projectileSpeed = 8;
       var projectiles;
@@ -79,36 +79,44 @@
       }
 
       function shoot(x, y, vx, vy) {
-        switch (currentWeapon) {
+        switch (weaponActive) {
+          //Pistol
           case 0:
             if (weaponCooldown === 0) {
-              var projectile = projectiles.create(x, y, "projectile");
-              projectile.setVelocityX(vx);
-              projectile.setVelocityY(vy);
+              createProjectile(x, y, vx, vy, 0);
               weaponCooldown = 20;
             }
             break;
+          //SMG
           case 1:
             if (weaponCooldown === 0) {
-              var projectile = projectiles.create(x, y, "projectile");
-              projectile.setVelocityX(vx + (Math.random() - 0.5) * 50);
-              projectile.setVelocityY(vy + (Math.random() - 0.5) * 50);
+              createProjectile(x, y, vx, vy, 4);
               weaponCooldown = 4;
             }
             break;
+          //Shotgun
           case 2:
             if (weaponCooldown === 0) {
-              for (var i = 0; i < 6; i++) {
-                var projectile = projectiles.create(x, y, "projectile");
-                projectile.setVelocityX(vx + (Math.random() - 0.5) * 50);
-                projectile.setVelocityY(vy + (Math.random() - 0.5) * 50);
-
-                console.log("hej");
+              for (var i = 0; i < 8; i++) {
+                createProjectile(x, y, vx, vy, 8);
               }
               weaponCooldown = 40;
             }
             break;
         }
+      }
+
+      /*
+       * X: The x position where the projectile is created
+       * Y: The y position where the projectile is created
+       * vx: The projectiles speed on the x axis
+       * vy: The projectiles speed on the y axis
+       * spread: the amount of spread the weapon should have. (number is multiplied by 10)
+       */
+      function createProjectile(x, y, vx, vy, spread) {
+        var projectile = projectiles.create(x, y, "projectile");
+        projectile.setVelocityX(vx + spread * (Math.random() - 0.5) * 20);
+        projectile.setVelocityY(vy + spread * (Math.random() - 0.5) * 20);
       }
 
       function update(time, delta) {
