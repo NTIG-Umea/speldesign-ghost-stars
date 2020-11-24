@@ -29,12 +29,12 @@
       };
 
       var player;
-      var walls;
-      var cursors;
+      
+      var keys;
       var pointer;
       var playerSpeed = 3;
 
-      /*
+      /* GUNS
        * 0: Pistol
        * 1: SMG
        * 2: Shotgun
@@ -43,6 +43,10 @@
       var weaponCooldown = 0;
       var projectileSpeed = 8;
       var projectiles;
+      
+      //World and Walls
+      var worldSize = 512 * 4;
+      var walls;
 
       const game = new Phaser.Game(config);
 
@@ -54,9 +58,11 @@
       }
 
       function create() {
-        //Background and camera
-        this.cameras.main.setBounds(0, 0, 2500, 2500);
 
+        //Camera
+        this.cameras.main.setBounds(0, 0, worldSize, worldSize);
+
+        //background
         this.add.image(0, 0, "background").setOrigin(0);
         this.add.image(512, 0, "background").setOrigin(0);
         this.add.image(512, 512, "background").setOrigin(0);
@@ -83,7 +89,7 @@
         /***Player input***/
 
         //WASD movement
-        cursors = this.input.keyboard.addKeys({
+        keys = this.input.keyboard.addKeys({
           up: Phaser.Input.Keyboard.KeyCodes.W,
           down: Phaser.Input.Keyboard.KeyCodes.S,
           left: Phaser.Input.Keyboard.KeyCodes.A,
@@ -93,6 +99,7 @@
 
       function shoot(x, y, vx, vy) {
         switch (weaponActive) {
+          
           //Pistol
           case 0:
             if (weaponCooldown === 0) {
@@ -100,6 +107,7 @@
               weaponCooldown = 20;
             }
             break;
+          
           //SMG
           case 1:
             if (weaponCooldown === 0) {
@@ -107,6 +115,7 @@
               weaponCooldown = 4;
             }
             break;
+          
           //Shotgun
           case 2:
             if (weaponCooldown === 0) {
@@ -149,16 +158,16 @@
         let playerMovingY = 0;
 
         //Checks if a specific direction is pressed, then adds or subracts from that direction by 1.
-        if (cursors.left.isDown) {
+        if (keys.left.isDown) {
           playerMovingX += -1;
         }
-        if (cursors.right.isDown) {
+        if (keys.right.isDown) {
           playerMovingX += 1;
         }
-        if (cursors.up.isDown) {
+        if (keys.up.isDown) {
           playerMovingY += -1;
         }
-        if (cursors.down.isDown) {
+        if (keys.down.isDown) {
           playerMovingY += 1;
         }
 
