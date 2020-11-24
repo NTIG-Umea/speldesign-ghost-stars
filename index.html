@@ -29,7 +29,6 @@
       };
 
       var player;
-      
       var keys;
       var pointer;
       var playerSpeed = 3;
@@ -43,6 +42,7 @@
       var weaponCooldown = 0;
       var projectileSpeed = 8;
       var projectiles;
+      var particles;
       
       //World and Walls
       var worldSize = 512 * 4;
@@ -55,6 +55,7 @@
         this.load.image("player", "assets/temptomte.png");
         this.load.image("projectile", "assets/star.png");
         this.load.image('ground', "assets/wall.png")
+        this.load.image("particle", "assets/trail.png");
       }
 
       function create() {
@@ -84,11 +85,14 @@
 
         //Projectile stuff
         projectiles = this.physics.add.group();
+        // creating a particle system uising "particle" image
+        particles = this.add.particles("particle");
+ 
 
+        //Walls
         this.physics.add.overlap(projectiles, walls, destroyProjectile, null, this);
-        /***Player input***/
 
-        //WASD movement
+        //Player WASD movement
         keys = this.input.keyboard.addKeys({
           up: Phaser.Input.Keyboard.KeyCodes.W,
           down: Phaser.Input.Keyboard.KeyCodes.S,
@@ -126,19 +130,6 @@
             }
             break;
         }
-      }
-
-      /*
-       * X: The x position where the projectile is created
-       * Y: The y position where the projectile is created
-       * vx: The projectiles speed on the x axis
-       * vy: The projectiles speed on the y axis
-       * spread: the amount of spread the weapon should have. (number is multiplied by 10)
-       */
-      function createProjectile(x, y, vx, vy, spread) {
-        var projectile = projectiles.create(x, y, "projectile");
-        projectile.setVelocityX(vx + spread * (Math.random() - 0.5) * 20);
-        projectile.setVelocityY(vy + spread * (Math.random() - 0.5) * 20);
       }
 
       function update(time, delta) {
@@ -206,11 +197,44 @@
           shoot(player.x, player.y, vx, vy);
         }
       }
-      
+      /*
+       * X: The x position where the projectile is created
+       * Y: The y position where the projectile is created
+       * vx: The projectiles speed on the x axis
+       * vy: The projectiles speed on the y axis
+       * spread: the amount of spread the weapon should have. (number is multiplied by 10)
+       */
+       function createProjectile(x, y, vx, vy, spread) {
+        var projectile = projectiles.create(x, y, "projectile");
+        projectile.setVelocityX(vx + spread * (Math.random() - 0.5) * 20);
+        projectile.setVelocityY(vy + spread * (Math.random() - 0.5) * 20);
+
+        // trail emitter configuration
+        emitter = particles.createEmitter({
+            speed: 0,
+            tint: (Math.random() * 0xFFFFFF + 50),
+            scale: {
+                start: 1,
+                end: 0
+            },
+            alpha: {
+                start: 0.5,
+                end: 0
+            }, 
+            // 1 = 1 milisecond
+            frequency: 1,
+            
+            lifespan: 300
+        });
+        
+        // Create a emmiter on the projectile
+        emitter.startFollow(projectile);
+      }
+        
       function destroyProjectile(projectile) {
           projectile.destroy();
+          emitter.stop();
       }
-
     </script>
   </body>
 </html>
