@@ -29,6 +29,7 @@
       };
 
       var player;
+      
       var keys;
       var pointer;
       var playerSpeed = 3;
@@ -43,7 +44,9 @@
       var projectileSpeed = 8;
       var projectiles;
       
+      //World and Walls
       var worldSize = 512 * 4;
+      var walls;
 
       const game = new Phaser.Game(config);
 
@@ -51,9 +54,11 @@
         this.load.image("background", "assets/512pxbackground.png");
         this.load.image("player", "assets/temptomte.png");
         this.load.image("projectile", "assets/star.png");
+        this.load.image('ground', "assets/wall.png")
       }
 
       function create() {
+
         //Camera
         this.cameras.main.setBounds(0, 0, worldSize, worldSize);
 
@@ -63,13 +68,24 @@
         this.add.image(512, 512, "background").setOrigin(0);
         this.add.image(0, 512, "background").setOrigin(0);
 
+        // Create walls  
+        walls = this.physics.add.staticGroup();
+        walls.create(512, 256, 'ground').refreshBody();
+        
+        // More walls
+        walls.create(256, 0, 'ground');
+        walls.create(768, 512, 'ground');
+
         //Player stuff
         player = this.physics.add.sprite(0, 0, "player");
         pointer = this.input.activePointer;
 
+        this.physics.add.collider(player, walls);
+
         //Projectile stuff
         projectiles = this.physics.add.group();
 
+        this.physics.add.overlap(projectiles, walls, destroyProjectile, null, this);
         /***Player input***/
 
         //WASD movement
@@ -190,6 +206,11 @@
           shoot(player.x, player.y, vx, vy);
         }
       }
+      
+      function destroyProjectile(projectile) {
+          projectile.destroy();
+      }
+
     </script>
   </body>
 </html>
