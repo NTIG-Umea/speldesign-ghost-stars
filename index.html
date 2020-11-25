@@ -51,15 +51,14 @@
       const game = new Phaser.Game(config);
 
       function preload() {
-        this.load.image("background", "assets/512pxbackground.png");
-        this.load.image("player", "assets/temptomte.png");
-        this.load.image("projectile", "assets/star.png");
+        this.load.image('background', "assets/512pxbackground.png");
+        this.load.spritesheet('player', 'assets/santa.png', { frameWidth: 78, frameHeight: 96 });
+        this.load.image('projectile', "assets/star.png");
         this.load.image('ground', "assets/wall.png")
-        this.load.image("particle", "assets/trail.png");
+        this.load.image('particle', "assets/trail.png");
       }
 
       function create() {
-
         //Camera
         this.cameras.main.setBounds(0, 0, worldSize, worldSize);
 
@@ -72,8 +71,6 @@
         // Create walls  
         walls = this.physics.add.staticGroup();
         walls.create(512, 256, 'ground').refreshBody();
-        
-        // More walls
         walls.create(256, 0, 'ground');
         walls.create(768, 512, 'ground');
 
@@ -88,8 +85,28 @@
         // creating a particle system uising "particle" image
         particles = this.add.particles("particle");
  
+        //Player animations, turning, walking left and walking right.
+    this.anims.create({
+        key: 'down',
+        frames: this.anims.generateFrameNumbers('player', { start: 0, end: 5 }),
+        frameRate: 10,
+        repeat: -1
+    });
 
-        //Walls
+    this.anims.create({
+        key: 'stop',
+        frames: [ { key: 'player', frame: 0 } ],
+        frameRate: 20
+    });
+
+    this.anims.create({
+        key: 'up',
+        frames: this.anims.generateFrameNumbers('player', { start: 6, end: 12 }),
+        frameRate: 10,
+        repeat: -1
+    });
+
+        //Destroy projectiles when they hit walls
         this.physics.add.overlap(projectiles, walls, destroyProjectile, null, this);
 
         //Player WASD movement
@@ -157,9 +174,11 @@
         }
         if (keys.up.isDown) {
           playerMovingY += -1;
+          player.anims.play('up', true);
         }
         if (keys.down.isDown) {
           playerMovingY += 1;
+          player.anims.play('down', true);
         }
 
         /* Movement algoritm
