@@ -56,11 +56,10 @@
       const game = new Phaser.Game(config);
 
       function preload() {
-        this.load.image('background', "assets/512pxbackground.png");
         this.load.spritesheet('player', 'assets/santa.png', { frameWidth: 78, frameHeight: 96 });
         this.load.image('projectile', "assets/star.png");
         this.load.image('wall', "assets/wall.png");
-        this.load.image('wall', "assets/floor.png");
+        this.load.image('floor', "assets/floor.png");
         this.load.image('particle', "assets/trail.png");
       }
 
@@ -69,8 +68,7 @@
         this.cameras.main.setBounds(0, 0, worldSize, worldSize);
 
         //background
-        //floor = this.add.tileSprite(32, 32, 'floor');
-        this.add.image(0, 0, "background").setOrigin(0);
+        floor = this.add.tileSprite(32, 32, 'floor');
 
         walls = this.physics.add.staticGroup();
 
