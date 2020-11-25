@@ -67,9 +67,14 @@
         //Camera
         this.cameras.main.setBounds(0, 0, worldSize, worldSize);
 
-        //background
-        floor = this.add.tileSprite(32, 32, 'floor');
 
+        //background
+        floor = this.physics.add.staticGroup();
+
+        for(i = 0; i < (Math.pow(worldSize/tileSize, 2)); i++){
+          floor.create(tileSize/2 + (i -Math.floor(i/(worldSize/tileSize))*(worldSize/tileSize)) * tileSize, tileSize/2 + Math.floor(i/(worldSize/tileSize)) * tileSize, 'floor');
+        }
+        
         walls = this.physics.add.staticGroup();
 
         //Create boarder walls
@@ -78,7 +83,6 @@
           walls.create(worldSize - tileSize/2, i * tileSize, 'wall'); //Right
           walls.create(i * tileSize, tileSize/2, 'wall'); //Up
           walls.create(i * tileSize, worldSize-tileSize/2, 'wall'); //Down
-          
         }
          
         //Create walls  
