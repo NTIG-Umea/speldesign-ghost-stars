@@ -54,7 +54,7 @@
         this.load.image('background', "assets/512pxbackground.png");
         this.load.spritesheet('player', 'assets/santa.png', { frameWidth: 78, frameHeight: 96 });
         this.load.image('projectile', "assets/star.png");
-        this.load.image('ground', "assets/wall.png")
+        this.load.image('wall', "assets/wall.png")
         this.load.image('particle', "assets/trail.png");
       }
 
@@ -70,9 +70,9 @@
 
         // Create walls  
         walls = this.physics.add.staticGroup();
-        walls.create(512, 256, 'ground').refreshBody();
-        walls.create(256, 0, 'ground');
-        walls.create(768, 512, 'ground');
+        walls.create(512, 256, 'wall').refreshBody();
+        walls.create(256, 0, 'wall');
+        walls.create(768, 512, 'wall');
 
         //Player stuff
         player = this.physics.add.sprite(0, 0, "player");
