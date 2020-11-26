@@ -257,11 +257,12 @@
         
         // Create a emmiter on the projectile
         emitter.startFollow(projectile);
+        console.log(particles.emitters);  //Temporary to help with bug fixing
       }
         
       function destroyProjectile(projectile) {
-          emitter.stop();
-          projectile.destroy();
+        particles.emitters.destroy();   //Destroys all active particles
+        projectile.destroy();
       }
     </script>
   </body>
