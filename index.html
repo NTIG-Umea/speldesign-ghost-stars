@@ -38,9 +38,9 @@
        * 1: SMG
        * 2: Shotgun
        */
-      var weaponActive = 0;
+      var weaponActive = 1;
       var weaponCooldown = 0;
-      var projectileSpeed = 8;
+      var projectileSpeed = 2;
       var projectiles;
       var particles;
       
@@ -49,8 +49,8 @@
       var tileSize = 64;
       var walls;
       var wallPos = {
-        x: [5,6,7,8,9,10],
-        y: [5,5,5,5,5,5],
+        x: [2,3,4,7,8,8,8,8,8,8,8,8],
+        y: [8,8,8,8,8,1,2,3,4,5,6,7],
         };
 
       const game = new Phaser.Game(config);
@@ -66,16 +66,13 @@
       function create() {
         //Camera
         this.cameras.main.setBounds(0, 0, worldSize, worldSize);
-
-
-        //background
         floor = this.physics.add.staticGroup();
+        walls = this.physics.add.staticGroup();
 
+        //Create floor tiles ovewr the whole map
         for(i = 0; i < (Math.pow(worldSize/tileSize, 2)); i++){
           floor.create(tileSize/2 + (i -Math.floor(i/(worldSize/tileSize))*(worldSize/tileSize)) * tileSize, tileSize/2 + Math.floor(i/(worldSize/tileSize)) * tileSize, 'floor');
         }
-        
-        walls = this.physics.add.staticGroup();
 
         //Create boarder walls
         for(i=0; i < worldSize/tileSize; i++){
@@ -98,6 +95,7 @@
 
         //Projectile stuff
         projectiles = this.physics.add.group();
+
         // creating a particle system uising "particle" image
         particles = this.add.particles("particle");
  
@@ -132,37 +130,6 @@
           left: Phaser.Input.Keyboard.KeyCodes.A,
           right: Phaser.Input.Keyboard.KeyCodes.D,
         });
-      }
-
-      function shoot(x, y, vx, vy) {
-        switch (weaponActive) {
-          
-          //Pistol
-          case 0:
-            if (weaponCooldown === 0) {
-              createProjectile(x, y, vx, vy, 0);
-              weaponCooldown = 20;
-            }
-            break;
-          
-          //SMG
-          case 1:
-            if (weaponCooldown === 0) {
-              createProjectile(x, y, vx, vy, 4);
-              weaponCooldown = 4;
-            }
-            break;
-          
-          //Shotgun
-          case 2:
-            if (weaponCooldown === 0) {
-              for (var i = 0; i < 8; i++) {
-                createProjectile(x, y, vx, vy, 8);
-              }
-              weaponCooldown = 40;
-            }
-            break;
-        }
       }
 
       function update(time, delta) {
@@ -232,19 +199,45 @@
           shoot(player.x, player.y, vx, vy);
         }
       }
-      /*
-       * X: The x position where the projectile is created
-       * Y: The y position where the projectile is created
-       * vx: The projectiles speed on the x axis
-       * vy: The projectiles speed on the y axis
-       * spread: the amount of spread the weapon should have. (number is multiplied by 10)
-       */
-       function createProjectile(x, y, vx, vy, spread) {
+      
+      function shoot(x, y, vx, vy) {
+        switch (weaponActive) {
+          
+          //Pistol
+          case 0:
+            if (weaponCooldown === 0) {
+              createProjectile(x, y, vx, vy, 0);
+              weaponCooldown = 20;
+            }
+            break;
+          
+          //SMG
+          case 1:
+            if (weaponCooldown === 0) {
+              createProjectile(x, y, vx, vy, 4);
+              weaponCooldown = 4;
+            }
+            break;
+          
+          //Shotgun
+          case 2:
+            if (weaponCooldown === 0) {
+              for (var i = 0; i < 8; i++) {
+                createProjectile(x, y, vx, vy, 8);
+              }
+              weaponCooldown = 40;
+            }
+            break;
+        }
+      }
+
+      //Change how "spread" works in the future
+      function createProjectile(x, y, vx, vy, spread) {
         var projectile = projectiles.create(x, y, "projectile");
         projectile.setVelocityX(vx + spread * (Math.random() - 0.5) * 20);
         projectile.setVelocityY(vy + spread * (Math.random() - 0.5) * 20);
 
-        // trail emitter configuration
+        //Trail emitter configuration
         emitter = particles.createEmitter({
             speed: 0,
             tint: (Math.random() * 0xFFFFFF + 50),
@@ -258,8 +251,8 @@
             }, 
             // 1 = 1 milisecond
             frequency: 1,
-            
-            lifespan: 300
+            lifespan: 800,
+            blendmode: 'ADD'
         });
         
         // Create a emmiter on the projectile
@@ -267,8 +260,8 @@
       }
         
       function destroyProjectile(projectile) {
-          projectile.destroy();
           emitter.stop();
+          projectile.destroy();
       }
     </script>
   </body>
