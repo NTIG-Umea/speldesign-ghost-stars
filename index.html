@@ -56,9 +56,9 @@
       const game = new Phaser.Game(config);
 
       function preload() {
-        this.load.spritesheet('player', 'assets/santa.png', { frameWidth: 78, frameHeight: 96 });
+        this.load.spritesheet('player', 'assets/playerSanta.png', { frameWidth: 78, frameHeight: 96 });
         this.load.image('projectile', "assets/star.png");
-        this.load.image('wall', "assets/wall.png");
+        this.load.image('wall', "assets/wall.png"); 
         this.load.image('floor', "assets/floor.png");
         this.load.image('particle', "assets/trail.png");
       }
@@ -156,11 +156,17 @@
         }
         if (keys.up.isDown) {
           playerMovingY += -1;
-          player.anims.play('up', true);
         }
         if (keys.down.isDown) {
           playerMovingY += 1;
+        }
+        
+        if(playerMovingY === 1){
           player.anims.play('down', true);
+        } else if(playerMovingY === -1){
+          player.anims.play('up', true);
+        } else {
+          player.anims.play('stop', true);
         }
 
         /* Movement algoritm
