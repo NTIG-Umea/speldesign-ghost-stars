@@ -62,7 +62,7 @@
         this.load.image('wall', "assets/wall.png");
         this.load.image('floor', "assets/floor.png");
         this.load.image('particle', "assets/trail.png");
-        this.load.image('grenade', "assets/grenade.png");
+        this.load.image('grenade', "assets/star.png");
       }
 
       function create() {
@@ -94,10 +94,13 @@
         pointer = this.input.activePointer;
 
         this.physics.add.collider(player, walls);
-        this.physics.add.collider(grenade, walls);
 
         //Projectile stuff
         projectiles = this.physics.add.group();
+
+        // Grenade physics
+        grenade = this.physics.add.group();
+        this.physics.add.collider(grenade, walls);
 
         // creating a particle system using "particle" image
         particles = this.add.particles("particle");
@@ -202,6 +205,28 @@
 
           shoot(player.x, player.y, vx, vy);
         }
+
+        // G is pressed -> throw grenade
+      if (keys.grenade.isDown) {
+          let angle = Phaser.Math.Angle.Between(
+            player.x,
+            player.y,
+            pointer.x + this.cameras.main.worldView.x,
+            pointer.y + this.cameras.main.worldView.y,
+          );
+
+          let v = 100 * projectileSpeed;
+          let uv = {
+            x: Math.cos(angle),
+            y: Math.sin(angle),
+          };
+          let vx = v * uv.x;
+          let vy = v * uv.y;
+
+          throwGrenade;
+          console.log(throwGrenade);
+        }
+
       }
       
       function shoot(x, y, vx, vy) {
@@ -268,35 +293,17 @@
           projectile.destroy();
       }
 
-      // Throw grenade on key down if grenades>0
-      if (keys.grenade.isDown && grenades>0) {
-          let angle = Phaser.Math.Angle.Between(
-            player.x,
-            player.y,
-            pointer.x + this.cameras.main.worldView.x,
-            pointer.y + this.cameras.main.worldView.y,
-            grenades -= 1,
-            createGrenade,
-          );
-
-          let v = 100 * projectileSpeed;
-          let uv = {
-            x: Math.cos(angle),
-            y: Math.sin(angle),
-          };
-          let vx = v * uv.x;
-          let vy = v * uv.y;
-
-          grenadeThrow(player.x, player.y, vx, vy);
-        }
-
+      function throwGrenade(x, y, vx, vy) {
+              createGrenade(x, y, vx, vy, 0);
+              weaponCooldown = 20;
+      }
+      
       // Create grenade  
       function createGrenade(x, y, vx, vy) {
-          var grenade = grenades.create(x, y, "grenade");
+          grenade = grenade.create(x, y, 'grenade');
           grenade.setVelocityX(vx * (Math.random() - 0.5) * 30);
           grenade.setVelocityY(vy * (Math.random() - 0.5) * 30);
       }
-
 
     </script>
   </body>
