@@ -38,14 +38,14 @@
        * 1: SMG
        * 2: Shotgun
        */
-      var weaponActive = 1;
+      var weaponActive = 0;
       var weaponCooldown = 0;
       var projectileSpeed = 2;
       var projectiles;
       var particles;
       
       //World and Walls
-      var worldSize = 512*2;
+      var worldSize = 16 * 64;
       var tileSize = 64;
       var walls;
       var wallPos = {
@@ -144,7 +144,6 @@
          *  the first variables decide the direction the player is moving.
          *  ex, if playerMovingX is -1 the player moves left, if its 1 they move right and if its 0 it stays in place.
          */
-
         let playerMovingX = 0;
         let playerMovingY = 0;
 
@@ -233,12 +232,12 @@
 
       //Change how "spread" works in the future
       function createProjectile(x, y, vx, vy, spread) {
-        var projectile = projectiles.create(x, y, "projectile");
+        let projectile = projectiles.create(x, y, "projectile");
         projectile.setVelocityX(vx + spread * (Math.random() - 0.5) * 20);
         projectile.setVelocityY(vy + spread * (Math.random() - 0.5) * 20);
 
         //Trail emitter configuration
-        emitter = particles.createEmitter({
+        projectile.emitter = particles.createEmitter({
             speed: 0,
             tint: (Math.random() * 0xFFFFFF + 50),
             scale: {
@@ -256,12 +255,12 @@
         });
         
         // Create a emmiter on the projectile
-        emitter.startFollow(projectile);
-        console.log(particles.emitters);  //Temporary to help with bug fixing
+        projectile.emitter.startFollow(projectile);
       }
         
       function destroyProjectile(projectile) {
-        particles.emitters.destroy();   //Destroys all active particles
+        projectile.emitter.stop();
+        //particles.emitters.destroy(projectile);   //Destroys all active particles
         projectile.destroy();
       }
     </script>
