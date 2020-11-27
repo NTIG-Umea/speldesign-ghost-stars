@@ -40,7 +40,7 @@
        */
       var weaponActive = 0;
       var weaponCooldown = 0;
-      var projectileSpeed = 2;
+      var projectileSpeed = 12;
       var projectiles;
       var particles;
       
@@ -181,7 +181,7 @@
           player.setVelocityY(playerMovingY * playerSpeed * 100);
         }
 
-        //Moves the camero to the players position
+        //Moves the camera to the players position
         this.cameras.main.centerOn(player.x, player.y);
 
         //if the mouse is clicked -> shoot
@@ -201,17 +201,17 @@
           let vx = v * uv.x;
           let vy = v * uv.y;
 
-          shoot(player.x, player.y, vx, vy);
+          shoot(player.x, player.y, vx, vy, angle);
         }
       }
       
-      function shoot(x, y, vx, vy) {
+      function shoot(x, y, vx, vy, angle) {
         switch (weaponActive) {
           
           //Pistol
           case 0:
             if (weaponCooldown === 0) {
-              createProjectile(x, y, vx, vy, 0);
+              createProjectile(x, y, vx, vy, angle, 0);
               weaponCooldown = 20;
             }
             break;
@@ -219,7 +219,7 @@
           //SMG
           case 1:
             if (weaponCooldown === 0) {
-              createProjectile(x, y, vx, vy, 4);
+              createProjectile(x, y, vx, vy, angle, 4);
               weaponCooldown = 4;
             }
             break;
@@ -228,7 +228,7 @@
           case 2:
             if (weaponCooldown === 0) {
               for (var i = 0; i < 8; i++) {
-                createProjectile(x, y, vx, vy, 8);
+                createProjectile(x, y, vx, vy, angle, 8);
               }
               weaponCooldown = 40;
             }
@@ -237,7 +237,7 @@
       }
 
       //Change how "spread" works in the future
-      function createProjectile(x, y, vx, vy, spread) {
+      function createProjectile(x, y, vx, vy, angle, spread) {
         let projectile = projectiles.create(x, y, "projectile");
         projectile.setVelocityX(vx + spread * (Math.random() - 0.5) * 20);
         projectile.setVelocityY(vy + spread * (Math.random() - 0.5) * 20);
@@ -245,7 +245,8 @@
         //Trail emitter configuration
         projectile.emitter = particles.createEmitter({
             speed: 0,
-            tint: (Math.random() * 0xFFFFFF + 50),
+            tint: (Math.random() * 0xFF0000 + 50),
+            rotate: angle * 180/Math.PI,
             scale: {
                 start: 1,
                 end: 0
@@ -256,7 +257,7 @@
             }, 
             // 1 = 1 milisecond
             frequency: 1,
-            lifespan: 800,
+            lifespan: 400,
             blendmode: 'ADD'
         });
         
