@@ -99,8 +99,8 @@
         projectiles = this.physics.add.group();
 
         // Grenade physics
-        grenade = this.physics.add.group();
-        this.physics.add.collider(grenade, walls);
+        grenades = this.physics.add.group();
+        this.physics.add.collider(grenades, walls);
 
         // creating a particle system using "particle" image
         particles = this.add.particles("particle");
@@ -223,7 +223,7 @@
           let vx = v * uv.x;
           let vy = v * uv.y;
 
-          throwGrenade;
+          throwGrenade(player.x, player.y, vx, vy);
           console.log(throwGrenade);
         }
 
@@ -295,12 +295,11 @@
 
       function throwGrenade(x, y, vx, vy) {
               createGrenade(x, y, vx, vy, 0);
-              weaponCooldown = 20;
       }
       
       // Create grenade  
       function createGrenade(x, y, vx, vy) {
-          grenade = grenade.create(x, y, 'grenade');
+          let grenade = grenades.create(x, y, 'grenade');
           grenade.setVelocityX(vx * (Math.random() - 0.5) * 30);
           grenade.setVelocityY(vy * (Math.random() - 0.5) * 30);
       }
