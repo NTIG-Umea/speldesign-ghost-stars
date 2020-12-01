@@ -43,6 +43,10 @@
       var projectileSpeed = 12;
       var projectiles;
       var particles;
+      
+      var grenades;
+      var grenadeCooldown = 0;
+      var grenade; 
 
       //World and Walls
       var worldSize = 16 * 64;
@@ -56,14 +60,13 @@
       const game = new Phaser.Game(config);
 
       function preload() {
-        this.load.spritesheet("player", "assets/playerSanta.png", {
-          frameWidth: 78,
-          frameHeight: 96,
-        });
+
+        this.load.spritesheet('player', 'assets/santa.png', { frameWidth: 78, frameHeight: 96 });
         this.load.image("projectile", "assets/star.png");
         this.load.image("wall", "assets/wall.png");
         this.load.image("floor", "assets/floor.png");
         this.load.image("particle", "assets/trail.png");
+        this.load.image('grenade', "assets/star.png");
         this.load.image("pistol", "assets/pistol.png");
         this.load.image("uzi", "assets/uzi.png");
         this.load.image("shotgun", "assets/shotgun.png");
@@ -122,7 +125,11 @@
         //Projectile stuff
         projectiles = this.physics.add.group();
 
-        // creating a particle system uising "particle" image
+        // Grenade physics
+        grenades = this.physics.add.group();
+        this.physics.add.collider(grenades, walls);
+
+        // creating a particle system using "particle" image
         particles = this.add.particles("particle");
 
         //Player animations, turning, walking left and walking right.
@@ -167,12 +174,16 @@
           down: Phaser.Input.Keyboard.KeyCodes.S,
           left: Phaser.Input.Keyboard.KeyCodes.A,
           right: Phaser.Input.Keyboard.KeyCodes.D,
+          grenade: Phaser.Input.Keyboard.KeyCodes.G,
         });
       }
 
       function update(time, delta) {
         if (weaponCooldown > 0) {
           weaponCooldown -= 1;
+        }
+        if (grenadeCooldown > 0) {
+          grenadeCooldown -= 1;
         }
 
         switch (weaponActive) {
@@ -272,6 +283,27 @@
 
           shoot(player.x, player.y, vx, vy, angle);
         }
+
+        // G is pressed -> throw grenade
+      if (keys.grenade.isDown) {
+          let angle = Phaser.Math.Angle.Between(
+            player.x,
+            player.y,
+            pointer.x + this.cameras.main.worldView.x,
+            pointer.y + this.cameras.main.worldView.y,
+          );
+
+          let v = 100 * projectileSpeed;
+          let uv = {
+            x: Math.cos(angle),
+            y: Math.sin(angle),
+          };
+          let vx = v * uv.x;
+          let vy = v * uv.y;
+
+          throwGrenade(player.x, player.y, vx, vy);
+        }
+
       }
 
       function shoot(x, y, vx, vy, angle) {
@@ -338,6 +370,22 @@
         //particles.emitters.destroy(projectile);   //Destroys all active particles
         projectile.destroy();
       }
+
+      function throwGrenade(x, y, vx, vy) {
+          if (grenadeCooldown === 0){
+            createGrenade(x, y, vx, vy, 0);
+            grenadeCooldown = 70;
+          }
+      }
+      
+      // Create grenade  
+      function createGrenade(x, y, vx, vy) {
+          grenade = grenades.create(x, y, 'grenade');
+          grenade.setVelocityX(vx);
+          grenade.setVelocityY(vy);
+          grenade.setBounce(0.2);
+      }
+
     </script>
   </body>
 </html>
