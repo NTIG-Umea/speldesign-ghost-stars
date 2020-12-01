@@ -38,33 +38,38 @@
        * 1: SMG
        * 2: Shotgun
        */
-      var weaponActive = 1;
+      var weaponActive = 0;
       var weaponCooldown = 0;
-      var grenadeCooldown = 0;
-      var projectileSpeed = 2;
+      var projectileSpeed = 12;
       var projectiles;
       var particles;
+      
       var grenades;
+      var grenadeCooldown = 0;
       var grenade; 
 
       //World and Walls
-      var worldSize = 512*2;
+      var worldSize = 16 * 64;
       var tileSize = 64;
       var walls;
       var wallPos = {
-        x: [2,3,4,7,8,8,8,8,8,8,8,8],
-        y: [8,8,8,8,8,1,2,3,4,5,6,7],
-        };
+        x: [2, 3, 4, 7, 8, 8, 8, 8, 8, 8, 8, 8],
+        y: [8, 8, 8, 8, 8, 1, 2, 3, 4, 5, 6, 7],
+      };
 
       const game = new Phaser.Game(config);
 
       function preload() {
+
         this.load.spritesheet('player', 'assets/santa.png', { frameWidth: 78, frameHeight: 96 });
-        this.load.image('projectile', "assets/star.png");
-        this.load.image('wall', "assets/wall.png");
-        this.load.image('floor', "assets/floor.png");
-        this.load.image('particle', "assets/trail.png");
+        this.load.image("projectile", "assets/star.png");
+        this.load.image("wall", "assets/wall.png");
+        this.load.image("floor", "assets/floor.png");
+        this.load.image("particle", "assets/trail.png");
         this.load.image('grenade', "assets/star.png");
+        this.load.image("pistol", "assets/pistol.png");
+        this.load.image("uzi", "assets/uzi.png");
+        this.load.image("shotgun", "assets/shotgun.png");
       }
 
       function create() {
@@ -74,21 +79,33 @@
         walls = this.physics.add.staticGroup();
 
         //Create floor tiles ovewr the whole map
-        for(i = 0; i < (Math.pow(worldSize/tileSize, 2)); i++){
-          floor.create(tileSize/2 + (i -Math.floor(i/(worldSize/tileSize))*(worldSize/tileSize)) * tileSize, tileSize/2 + Math.floor(i/(worldSize/tileSize)) * tileSize, 'floor');
+        for (i = 0; i < Math.pow(worldSize / tileSize, 2); i++) {
+          floor.create(
+            tileSize / 2 +
+              (i -
+                Math.floor(i / (worldSize / tileSize)) *
+                  (worldSize / tileSize)) *
+                tileSize,
+            tileSize / 2 + Math.floor(i / (worldSize / tileSize)) * tileSize,
+            "floor"
+          );
         }
 
         //Create boarder walls
-        for(i=0; i < worldSize/tileSize; i++){
-          walls.create(tileSize/2, i * tileSize, 'wall'); //Left
-          walls.create(worldSize - tileSize/2, i * tileSize, 'wall'); //Right
-          walls.create(i * tileSize, tileSize/2, 'wall'); //Up
-          walls.create(i * tileSize, worldSize-tileSize/2, 'wall'); //Down
+        for (i = 0; i < worldSize / tileSize; i++) {
+          walls.create(tileSize / 2, i * tileSize, "wall"); //Left
+          walls.create(worldSize - tileSize / 2, i * tileSize, "wall"); //Right
+          walls.create(i * tileSize, tileSize / 2, "wall"); //Up
+          walls.create(i * tileSize, worldSize - tileSize / 2, "wall"); //Down
         }
-         
-        //Create walls  
-        for(i=0; i < wallPos.x.length; i++){
-          walls.create(wallPos.x[i]*tileSize-tileSize/2, wallPos.y[i]*tileSize-tileSize/2, 'wall');
+
+        //Create walls
+        for (i = 0; i < wallPos.x.length; i++) {
+          walls.create(
+            wallPos.x[i] * tileSize - tileSize / 2,
+            wallPos.y[i] * tileSize - tileSize / 2,
+            "wall"
+          );
         }
 
         //Player stuff
@@ -96,6 +113,14 @@
         pointer = this.input.activePointer;
 
         this.physics.add.collider(player, walls);
+
+        //Weapon sprites
+        pistol = this.add.sprite(0, 0, "pistol");
+        pistol.alpha = 0;
+        uzi = this.add.sprite(0, 0, "uzi");
+        uzi.alpha = 0;
+        shotgun = this.add.sprite(0, 0, "shotgun");
+        shotgun.alpha = 0;
 
         //Projectile stuff
         projectiles = this.physics.add.group();
@@ -106,30 +131,42 @@
 
         // creating a particle system using "particle" image
         particles = this.add.particles("particle");
- 
+
         //Player animations, turning, walking left and walking right.
-    this.anims.create({
-        key: 'down',
-        frames: this.anims.generateFrameNumbers('player', { start: 0, end: 5 }),
-        frameRate: 10,
-        repeat: -1
-    });
+        this.anims.create({
+          key: "down",
+          frames: this.anims.generateFrameNumbers("player", {
+            start: 0,
+            end: 5,
+          }),
+          frameRate: 10,
+          repeat: -1,
+        });
 
-    this.anims.create({
-        key: 'stop',
-        frames: [ { key: 'player', frame: 0 } ],
-        frameRate: 20
-    });
+        this.anims.create({
+          key: "stop",
+          frames: [{ key: "player", frame: 0 }],
+          frameRate: 20,
+        });
 
-    this.anims.create({
-        key: 'up',
-        frames: this.anims.generateFrameNumbers('player', { start: 6, end: 12 }),
-        frameRate: 10,
-        repeat: -1
-    });
+        this.anims.create({
+          key: "up",
+          frames: this.anims.generateFrameNumbers("player", {
+            start: 6,
+            end: 12,
+          }),
+          frameRate: 10,
+          repeat: -1,
+        });
 
         //Destroy projectiles when they hit walls
-        this.physics.add.overlap(projectiles, walls, destroyProjectile, null, this);
+        this.physics.add.overlap(
+          projectiles,
+          walls,
+          destroyProjectile,
+          null,
+          this
+        );
 
         //Player WASD movement
         keys = this.input.keyboard.addKeys({
@@ -149,6 +186,37 @@
           grenadeCooldown -= 1;
         }
 
+        switch (weaponActive) {
+          case 0:
+            pistol.x = player.x + 35;
+            pistol.y = player.y + 5;
+
+            pistol.alpha = 1;
+            uzi.alpha = 0;
+            shotgun.alpha = 0;
+            break;
+
+          //SMG
+          case 1:
+            uzi.x = player.x + 30;
+            uzi.y = player.y + 5;
+
+            pistol.alpha = 0;
+            uzi.alpha = 1;
+            shotgun.alpha = 0;
+            break;
+
+          //Shotgun
+          case 2:
+            shotgun.x = player.x + 15;
+            shotgun.y = player.y + 5;
+
+            pistol.alpha = 0;
+            uzi.alpha = 0;
+            shotgun.alpha = 1;
+            break;
+        }
+
         //Camera
         var cam = this.cameras.main;
 
@@ -156,7 +224,6 @@
          *  the first variables decide the direction the player is moving.
          *  ex, if playerMovingX is -1 the player moves left, if its 1 they move right and if its 0 it stays in place.
          */
-
         let playerMovingX = 0;
         let playerMovingY = 0;
 
@@ -169,11 +236,17 @@
         }
         if (keys.up.isDown) {
           playerMovingY += -1;
-          player.anims.play('up', true);
         }
         if (keys.down.isDown) {
           playerMovingY += 1;
-          player.anims.play('down', true);
+        }
+
+        if (playerMovingY === 1) {
+          player.anims.play("down", true);
+        } else if (playerMovingY === -1) {
+          player.anims.play("up", true);
+        } else {
+          player.anims.play("stop", true);
         }
 
         /* Movement algoritm
@@ -188,7 +261,7 @@
           player.setVelocityY(playerMovingY * playerSpeed * 100);
         }
 
-        //Moves the camero to the players position
+        //Moves the camera to the players position
         this.cameras.main.centerOn(player.x, player.y);
 
         //if the mouse is clicked -> shoot
@@ -208,7 +281,7 @@
           let vx = v * uv.x;
           let vy = v * uv.y;
 
-          shoot(player.x, player.y, vx, vy);
+          shoot(player.x, player.y, vx, vy, angle);
         }
 
         // G is pressed -> throw grenade
@@ -232,31 +305,30 @@
         }
 
       }
-      
-      function shoot(x, y, vx, vy) {
+
+      function shoot(x, y, vx, vy, angle) {
         switch (weaponActive) {
-          
           //Pistol
           case 0:
             if (weaponCooldown === 0) {
-              createProjectile(x, y, vx, vy, 0);
+              createProjectile(x, y, vx, vy, angle, 0);
               weaponCooldown = 20;
             }
             break;
-          
+
           //SMG
           case 1:
             if (weaponCooldown === 0) {
-              createProjectile(x, y, vx, vy, 4);
+              createProjectile(x, y, vx, vy, angle, 4);
               weaponCooldown = 4;
             }
             break;
-          
+
           //Shotgun
           case 2:
             if (weaponCooldown === 0) {
               for (var i = 0; i < 8; i++) {
-                createProjectile(x, y, vx, vy, 8);
+                createProjectile(x, y, vx, vy, angle, 8);
               }
               weaponCooldown = 40;
             }
@@ -265,36 +337,38 @@
       }
 
       //Change how "spread" works in the future
-      function createProjectile(x, y, vx, vy, spread) {
-        var projectile = projectiles.create(x, y, "projectile");
+      function createProjectile(x, y, vx, vy, angle, spread) {
+        let projectile = projectiles.create(x, y, "projectile");
         projectile.setVelocityX(vx + spread * (Math.random() - 0.5) * 20);
         projectile.setVelocityY(vy + spread * (Math.random() - 0.5) * 20);
 
         //Trail emitter configuration
-        emitter = particles.createEmitter({
-            speed: 0,
-            tint: (Math.random() * 0xFFFFFF + 50),
-            scale: {
-                start: 1,
-                end: 0
-            },
-            alpha: {
-                start: 0.5,
-                end: 0
-            }, 
-            // 1 = 1 milisecond
-            frequency: 1,
-            lifespan: 800,
-            blendmode: 'ADD'
+        projectile.emitter = particles.createEmitter({
+          speed: 0,
+          tint: Math.random() * 0xff0000 + 50,
+          rotate: (angle * 180) / Math.PI,
+          scale: {
+            start: 1,
+            end: 0,
+          },
+          alpha: {
+            start: 0.5,
+            end: 0,
+          },
+          // 1 = 1 milisecond
+          frequency: 1,
+          lifespan: 400,
+          blendmode: "ADD",
         });
-        
+
         // Create a emmiter on the projectile
-        emitter.startFollow(projectile);
+        projectile.emitter.startFollow(projectile);
       }
-        
+
       function destroyProjectile(projectile) {
-          emitter.stop();
-          projectile.destroy();
+        projectile.emitter.stop();
+        //particles.emitters.destroy(projectile);   //Destroys all active particles
+        projectile.destroy();
       }
 
       function throwGrenade(x, y, vx, vy) {
