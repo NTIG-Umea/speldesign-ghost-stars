@@ -84,11 +84,9 @@
         for (i = 0; i < Math.pow(worldSize / tileSize, 2); i++) {
           floor.create(
             tileSize / 2 +
-              (i -
-                Math.floor(i / (worldSize / tileSize)) *
+              (i -Math.floor(i / (worldSize / tileSize)) *
                   (worldSize / tileSize)) *
-                tileSize,
-            tileSize / 2 + Math.floor(i / (worldSize / tileSize)) * tileSize,
+                tileSize, tileSize / 2 + Math.floor(i / (worldSize / tileSize)) * tileSize,
             "floor"
           );
         }
@@ -177,6 +175,8 @@
           left: Phaser.Input.Keyboard.KeyCodes.A,
           right: Phaser.Input.Keyboard.KeyCodes.D,
           grenade: Phaser.Input.Keyboard.KeyCodes.G,
+          lastWeapon: Phaser.Input.Keyboard.KeyCodes.Q,
+          nextWeapon: Phaser.Input.Keyboard.KeyCodes.E
         });
       }
 
@@ -217,6 +217,15 @@
             uzi.alpha = 0;
             shotgun.alpha = 1;
             break;
+        }
+
+        if ((keys.lastWeapon.isDown) && (weaponCooldown === 0)) {
+          weaponActive--;
+          weaponCooldown = 20;
+        }
+        if ((keys.nextWeapon.isDown) && (weaponCooldown === 0) ) {
+          weaponActive++;
+          weaponCooldown = 20;
         }
 
         //Camera
@@ -306,6 +315,7 @@
           throwGrenade(player.x, player.y, vx, vy);
         }
       }
+      
 
       function shoot(x, y, vx, vy, angle) {
         switch (weaponActive) {
@@ -368,7 +378,6 @@
 
       function destroyProjectile(projectile) {
         projectile.emitter.stop();
-        //particles.emitters.destroy(projectile);   //Destroys all active particles
         projectile.destroy();
       }
 
