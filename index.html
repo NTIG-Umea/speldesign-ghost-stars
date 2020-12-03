@@ -74,7 +74,7 @@
         this.load.image("shotgun", "assets/shotgun.png");
       }
 
-      function create() {
+      function create() {        
         //Camera
         this.cameras.main.setBounds(0, 0, worldSize, worldSize);
         floor = this.physics.add.staticGroup();
@@ -178,9 +178,13 @@
           lastWeapon: Phaser.Input.Keyboard.KeyCodes.Q,
           nextWeapon: Phaser.Input.Keyboard.KeyCodes.E
         });
+        
+        // Add timer of 5 seconds after function grenadeThrow was used, then run function explodeGrenade 
+        // grenadeTimer = game.time.events.add(Phaser.Timer.SECOND*5, this.explodeGrenade, this);
       }
 
       function update(time, delta) {
+        
         if (weaponCooldown > 0) {
           weaponCooldown -= 1;
         }
@@ -391,10 +395,17 @@
       // Create grenade
       function createGrenade(x, y, vx, vy) {
         grenade = grenades.create(x, y, "grenade");
-        grenade.setVelocityX(vx * 0.5);
-        grenade.setVelocityY(vy * 0.5);
-        grenade.setBounce(0.3);
+        grenade.setVelocityX(vx * 0.3);
+        grenade.setVelocityY(vy * 0.3);
+        grenade.setBounce(0.75);
+
+
       }
+
+      function explodeGrenade(){
+
+      }
+
     </script>
   </body>
 </html>
