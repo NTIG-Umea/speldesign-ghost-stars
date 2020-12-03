@@ -39,7 +39,11 @@
        * 2: Shotgun
        */
       var weaponActive = 0;
+
+      var weapon = [];
+
       var weaponCooldown = 0;
+      var weaponSwitchCooldown = 0;
       var projectileSpeed = 12;
       var projectiles;
       var particles;
@@ -84,9 +88,9 @@
         for (i = 0; i < Math.pow(worldSize / tileSize, 2); i++) {
           floor.create(
             tileSize / 2 +
-              (i -Math.floor(i / (worldSize / tileSize)) *
-                  (worldSize / tileSize)) *
-                tileSize, tileSize / 2 + Math.floor(i / (worldSize / tileSize)) * tileSize,
+              (i - Math.floor(i / (worldSize / tileSize)) * (worldSize / tileSize)) *
+                tileSize,
+            tileSize / 2 + Math.floor(i / (worldSize / tileSize)) * tileSize,
             "floor"
           );
         }
@@ -111,16 +115,22 @@
         //Player stuff
         player = this.physics.add.sprite(128, 128, "player");
         pointer = this.input.activePointer;
-
         this.physics.add.collider(player, walls);
 
         //Weapon sprites
-        pistol = this.add.sprite(0, 0, "pistol");
-        pistol.alpha = 0;
-        uzi = this.add.sprite(0, 0, "uzi");
-        uzi.alpha = 0;
-        shotgun = this.add.sprite(0, 0, "shotgun");
-        shotgun.alpha = 0;
+        let newLength = weapon.push(
+          (pistol = new Weapon("pistol", 35, 5, 60, -2.5, 15, 1)),
+          (uzi = new Weapon("uzi", 30, 5, 62, -6, 3, 1)),
+          (shotgun = new Weapon("shotgun", 15, 5, 54, 5, 30, 8))
+        );
+
+        pistolSprite = this.add.sprite(player.x, player.y, weapon[0].getSprite);
+        uziSprite = this.add.sprite(player.x, player.y, weapon[1].getSprite);
+        shotgunSprite = this.add.sprite(player.x, player.y, weapon[2].getSprite);
+
+        pistolSprite.alpha = 0;
+        uziSprite.alpha = 0;
+        shotgunSprite.alpha = 0;
 
         //Projectile stuff
         projectiles = this.physics.add.group();
@@ -160,13 +170,7 @@
         });
 
         //Destroy projectiles when they hit walls
-        this.physics.add.overlap(
-          projectiles,
-          walls,
-          destroyProjectile,
-          null,
-          this
-        );
+        this.physics.add.overlap(projectiles, walls, destroyProjectile, null, this);
 
         //Player WASD movement
         keys = this.input.keyboard.addKeys({
@@ -176,56 +180,65 @@
           right: Phaser.Input.Keyboard.KeyCodes.D,
           grenade: Phaser.Input.Keyboard.KeyCodes.G,
           lastWeapon: Phaser.Input.Keyboard.KeyCodes.Q,
-          nextWeapon: Phaser.Input.Keyboard.KeyCodes.E
+          nextWeapon: Phaser.Input.Keyboard.KeyCodes.E,
         });
       }
 
       function update(time, delta) {
         if (weaponCooldown > 0) {
-          weaponCooldown -= 1;
+          weaponCooldown--;
         }
         if (grenadeCooldown > 0) {
-          grenadeCooldown -= 1;
+          grenadeCooldown--;
+        }
+        if (weaponSwitchCooldown > 0) {
+          weaponSwitchCooldown--;
         }
 
         switch (weaponActive) {
           case 0:
-            pistol.x = player.x + 35;
-            pistol.y = player.y + 5;
-
-            pistol.alpha = 1;
-            uzi.alpha = 0;
-            shotgun.alpha = 0;
+            pistolSprite.x = player.x + weapon[0].getOffX;
+            pistolSprite.y = player.y + weapon[0].getOffY;
+            pistolSprite.alpha = 1;
             break;
 
           //SMG
           case 1:
-            uzi.x = player.x + 30;
-            uzi.y = player.y + 5;
-
-            pistol.alpha = 0;
-            uzi.alpha = 1;
-            shotgun.alpha = 0;
+            uziSprite.x = player.x + weapon[1].getOffX;
+            uziSprite.y = player.y + weapon[1].getOffY;
+            uziSprite.alpha = 1;
             break;
 
           //Shotgun
           case 2:
-            shotgun.x = player.x + 15;
-            shotgun.y = player.y + 5;
-
-            pistol.alpha = 0;
-            uzi.alpha = 0;
-            shotgun.alpha = 1;
+            shotgunSprite.x = player.x + weapon[2].getOffX;
+            shotgunSprite.y = player.y + weapon[2].getOffX;
+            shotgunSprite.alpha = 1;
             break;
         }
 
-        if ((keys.lastWeapon.isDown) && (weaponCooldown === 0)) {
-          weaponActive--;
-          weaponCooldown = 20;
-        }
-        if ((keys.nextWeapon.isDown) && (weaponCooldown === 0) ) {
-          weaponActive++;
-          weaponCooldown = 20;
+        if (
+          (keys.lastWeapon.isDown || keys.nextWeapon.isDown) &&
+          weaponSwitchCooldown === 0
+        ) {
+          if (keys.lastWeapon.isDown) {
+            if (weaponActive == 0) {
+              weaponActive = weapon.length - 1;
+            } else {
+              weaponActive--;
+            }
+          }
+          if (keys.nextWeapon.isDown) {
+            if (weaponActive == weapon.length - 1) {
+              weaponActive = 0;
+            } else {
+              weaponActive++;
+            }
+          }
+          pistolSprite.alpha = 0;
+          uziSprite.alpha = 0;
+          shotgunSprite.alpha = 0;
+          weaponSwitchCooldown = 20;
         }
 
         //Camera
@@ -278,8 +291,8 @@
         //if the mouse is clicked -> shoot
         if (pointer.isDown) {
           let angle = Phaser.Math.Angle.Between(
-            player.x,
-            player.y,
+            player.x + weapon[weaponActive].getMuzX,
+            player.y + weapon[weaponActive].getMuzY,
             pointer.x + this.cameras.main.worldView.x,
             pointer.y + this.cameras.main.worldView.y
           );
@@ -292,7 +305,13 @@
           let vx = v * uv.x;
           let vy = v * uv.y;
 
-          shoot(player.x, player.y, vx, vy, angle);
+          shoot(
+            player.x + weapon[weaponActive].getMuzX,
+            player.y + weapon[weaponActive].getMuzY,
+            vx,
+            vy,
+            angle
+          );
         }
 
         // G is pressed -> throw grenade
@@ -315,35 +334,13 @@
           throwGrenade(player.x, player.y, vx, vy);
         }
       }
-      
 
       function shoot(x, y, vx, vy, angle) {
-        switch (weaponActive) {
-          //Pistol
-          case 0:
-            if (weaponCooldown === 0) {
-              createProjectile(x, y, vx, vy, angle, 0);
-              weaponCooldown = 20;
-            }
-            break;
-
-          //SMG
-          case 1:
-            if (weaponCooldown === 0) {
-              createProjectile(x, y, vx, vy, angle, 4);
-              weaponCooldown = 4;
-            }
-            break;
-
-          //Shotgun
-          case 2:
-            if (weaponCooldown === 0) {
-              for (var i = 0; i < 8; i++) {
-                createProjectile(x, y, vx, vy, angle, 8);
-              }
-              weaponCooldown = 40;
-            }
-            break;
+        if (weaponCooldown === 0) {
+          for (var i = 0; i < weapon[weaponActive].getBulletMultiplier; i++) {
+            createProjectile(x, y, vx, vy, angle, 8);
+          }
+          weaponCooldown = weapon[weaponActive].getCooldown;
         }
       }
 
@@ -394,6 +391,40 @@
         grenade.setVelocityX(vx * 0.5);
         grenade.setVelocityY(vy * 0.5);
         grenade.setBounce(0.3);
+      }
+
+      class Weapon {
+        constructor(sprite, offX, offY, muzX, muzY, cd, bm) {
+          this.sprite = sprite;
+          this.offX = offX;
+          this.offY = offY;
+          this.muzX = muzX;
+          this.muzY = muzY;
+          this.cd = cd;
+          this.bm = bm;
+        }
+
+        get getSprite() {
+          return this.sprite;
+        }
+        get getOffX() {
+          return this.offX;
+        }
+        get getOffY() {
+          return this.offY;
+        }
+        get getMuzX() {
+          return this.muzX;
+        }
+        get getMuzY() {
+          return this.muzY;
+        }
+        get getCooldown() {
+          return this.cd;
+        }
+        get getBulletMultiplier() {
+          return this.bm;
+        }
       }
     </script>
   </body>
