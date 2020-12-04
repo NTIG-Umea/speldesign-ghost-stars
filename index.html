@@ -179,8 +179,25 @@
           nextWeapon: Phaser.Input.Keyboard.KeyCodes.E
         });
         
-        // Add timer of 5 seconds after function grenadeThrow was used, then run function explodeGrenade 
-        // grenadeTimer = game.time.events.add(Phaser.Timer.SECOND*5, this.explodeGrenade, this);
+        // Add timer of 2 seconds after function grenadeThrow was used, then run function explodeGrenade 
+        // var grenadeTimer = this.time.delayedCall(2000, explodeGrenade, null, this); 
+        // console.log(grenadeTimer);
+        // var grenadeTimer.paused = true;
+
+        function grenadeTimer (){
+      var me = this;
+              
+      me.startTime = new Date();
+      me.totalTime = 120;
+      me.timeElapsed = 0;
+              
+      me.createTimer();
+              
+      me.gameTimer = game.time.events.loop(100, function(){
+        me.updateTimer();
+      });
+      
+      }
       }
 
       function update(time, delta) {
@@ -318,6 +335,23 @@
 
           throwGrenade(player.x, player.y, vx, vy);
         }
+        
+        function updateTimer(){
+
+          var me = this;
+                  
+          var currentTime = new Date();
+          var timeDifference = me.startTime.getTime() - currentTime.getTime();
+                  
+          //Time elapsed in seconds
+          me.timeElapsed = Math.abs(timeDifference / 1000);
+                  
+          //Time remaining in seconds
+          var timeRemaining = me.totalTime - me.timeElapsed; 
+                  
+          //Convert seconds into minutes and seconds
+          var seconds = Math.floor(timeRemaining) - (60 * minutes);
+          }
       }
       
 
@@ -399,11 +433,13 @@
         grenade.setVelocityY(vy * 0.3);
         grenade.setBounce(0.75);
 
-
-      }
+        // if (grenadeTimer.paused = true){
+        //   grenadeTimer = this.time.delayedCall(2000, explodeGrenade, null, this); 
+        }
+        
 
       function explodeGrenade(){
-
+        grenade.destroy()
       }
 
     </script>
