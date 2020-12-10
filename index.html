@@ -179,19 +179,19 @@
           nextWeapon: Phaser.Input.Keyboard.KeyCodes.E
         });
 
-      function grenadeTimer (){
-        var me = this;
+      // function grenadeTimer (){
+      //   var me = this;
                 
-        me.startTime = new Date();
-        me.totalTime = 120;
-        me.timeElapsed = 0;
+      //   me.startTime = new Date();
+      //   me.totalTime = 120;
+      //   me.timeElapsed = 0;
                 
-        me.createTimer();
+      //   me.createTimer();
    
-        me.gameTimer = game.time.events.loop(100, function(){
-          me.updateTimer();
-      });
-      }
+      //   me.gameTimer = game.time.events.loop(100, function(){
+      //     me.updateTimer();
+      // });
+      // }
         
         }
 
@@ -311,19 +311,22 @@
           shoot(player.x, player.y, vx, vy, angle);
         }
 
-        function updateTimer(){
+        // function updateTimer(){
 
-          var me = this;
+        //   var me = this;
 
-          var currentTime = new Date();
-          var timeDifference = me.startTime.getTime() - currentTime.getTime();
+        //   var currentTime = new Date();
+        //   var timeDifference = me.startTime.getTime() - currentTime.getTime();
 
-          //Time elapsed in seconds
-          me.timeElapsed = Math.abs(timeDifference / 1000);
+        //   //Time elapsed in seconds
+        //   me.timeElapsed = Math.abs(timeDifference / 1000);
 
-          //Convert seconds into minutes and seconds
-          var seconds = Math.floor(timeRemaining) - (60 * minutes);
-        }
+        //   //Convert seconds into minutes and seconds
+        //   var seconds = Math.floor(timeRemaining) - (60 * minutes);
+
+        //   console.log(currentTime);
+        //   console.log(timeDifference);
+        //   }
 
         // G is pressed -> throw grenade
         if (keys.grenade.isDown) {
@@ -417,8 +420,7 @@
           grenadeCooldown = 70;
         } 
         // Explode 2 seconds after this.currentTime
-        // Not finished 
-        // var boomTime = this.currentTime + (seconds*2);
+          var timer = this.time.addEvent(1500, explodeGrenade, this);  // delay in ms
       }
 
       // Create grenade
@@ -431,7 +433,7 @@
         
 
       function explodeGrenade(){
-        grenade.destroy()
+        grenade.destroy();
       }
 
     </script>
