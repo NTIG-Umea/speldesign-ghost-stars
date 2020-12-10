@@ -21,7 +21,7 @@ export default class PlayScene extends Phaser.Scene {
     this.weapon = [];
     this.projectiles = this.physics.add.group();
     this.grenades = this.physics.add.group();
-    this.particles = this.add.particles("particle");
+    
     this.weaponCooldown = 0;
     this.weaponActive = 0;
     this.playerSpeed = 3;
@@ -291,6 +291,7 @@ export default class PlayScene extends Phaser.Scene {
     this.projectile.setVelocityX(vx + spread * (Math.random() - 0.5) * 20);
     this.projectile.setVelocityY(vy + spread * (Math.random() - 0.5) * 20);
 
+    this.particles = this.add.particles("particle");
     //Trail emitter configuration
     this.projectile.emitter = this.particles.createEmitter({
       speed: 0,
