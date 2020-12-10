@@ -6,8 +6,6 @@ export default class PauseScene extends Phaser.Scene {
   }
 
   create () {
-    this.add.image(400, 300, 'sky');
-
     console.log(this.scene.isSleeping('play'));
 
     this.add.text(400, 200, 'Pause Menu Test', {
