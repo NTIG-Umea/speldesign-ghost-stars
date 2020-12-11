@@ -6,16 +6,21 @@ export default class MenuScene extends Phaser.Scene {
   }
 
   create () {
-    this.add.text(400, 200, 'Phaser 3 with Parcel\n\n< play >', {
+    this.add.text(400, 200, 'Phaser 3 with Parcel', {
       align: 'center',
       fill: 'white',
       fontFamily: 'sans-serif',
-      fontSize: 48
+      fontSize: 55
     })
       .setOrigin(0.5, 0);
 
-    this.input.on('pointerdown', function () {
-      this.scene.switch('play');
-    }, this);
+      const startButton = this.add.text(400, 300, '< play >', {
+        align: 'center',
+        fill: 'white',
+        fontFamily: 'sans-serif',
+        fontSize: 45
+      }).setOrigin(0.5, 0);
+      startButton.setInteractive();
+      startButton.on('pointerdown', () => { this.scene.switch('play'); });
   }
 }
