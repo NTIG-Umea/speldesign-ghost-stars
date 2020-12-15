@@ -4,10 +4,10 @@
   "description": "A Phaser 3 game template using Parcel bundler",
   "main": "src/index.html",
   "scripts": {
-    "build": "parcel build src/index.html -d docs/ --public-url /speldesign-ghost-stars --experimental-scope-hoisting",
+    "build": "rm -rf docs/ && parcel build src/index.html -d docs/ --public-url /speldesign-ghost-stars --experimental-scope-hoisting",
     "watch": "parcel watch src/index.html -d docs/",
     "start": "parcel serve src/index.html -d docs/",
-    "clean": "rm -v dist/*",
+    "clean": "rm -v docs/*",
     "test": "npx eslint src"
   },
   "author": "Jens",
