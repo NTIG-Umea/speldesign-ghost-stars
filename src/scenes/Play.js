@@ -19,6 +19,7 @@ export default class PlayScene extends Phaser.Scene {
     this.player;
     this.pointer = this.input.activePointer;
     this.weapon = [];
+    this.weaponFlipped = 0;
     this.projectiles = this.physics.add.group();
     this.grenades = this.physics.add.group();
     
@@ -136,24 +137,37 @@ export default class PlayScene extends Phaser.Scene {
       this.weaponSwitchCooldown--;
     }
 
+    if(this.pointer.x < this.player.x){
+      this.weaponFlipped = -1;
+      this.pistolSprite.flipX = true;
+      this.uziSprite.flipX = true;
+      this.shotgunSprite.flipX = true;
+
+    } else {
+      this.weaponFlipped = 1;
+      this.pistolSprite.flipX = false;
+      this.uziSprite.flipX = false;
+      this.shotgunSprite.flipX = false;
+    }
+
     switch (this.weaponActive) {
       case 0:
-        this.pistolSprite.x = this.player.x + this.weapon[0].getOffX;
+        this.pistolSprite.x = this.player.x + this.weapon[0].getOffX * (this.weaponFlipped);
         this.pistolSprite.y = this.player.y + this.weapon[0].getOffY;
         this.pistolSprite.alpha = 1;
         break;
 
       //SMG
       case 1:
-        this.uziSprite.x = this.player.x + this.weapon[1].getOffX;
+        this.uziSprite.x = this.player.x + this.weapon[1].getOffX * (this.weaponFlipped);
         this.uziSprite.y = this.player.y + this.weapon[1].getOffY;
         this.uziSprite.alpha = 1;
         break;
 
       //Shotgun
       case 2:
-        this.shotgunSprite.x = this.player.x + this.weapon[2].getOffX;
-        this.shotgunSprite.y = this.player.y + this.weapon[2].getOffX;
+        this.shotgunSprite.x = this.player.x + this.weapon[2].getOffX * (this.weaponFlipped);
+        this.shotgunSprite.y = this.player.y + this.weapon[2].getOffY;
         this.shotgunSprite.alpha = 1;
         break;
     }
@@ -232,8 +246,8 @@ export default class PlayScene extends Phaser.Scene {
     //if the mouse is clicked -> shoot
     if (this.pointer.isDown) {
       let angle = Phaser.Math.Angle.Between(
-        this.player.x + this.weapon[this.weaponActive].getMuzX,
-        this.player.y + this.weapon[this.weaponActive].getMuzY,
+        this.player.x + this.weapon[this.weaponActive].getMuzX * (this.weaponFlipped),
+        this.player.y + this.weapon[this.weaponActive].getMuzY * (this.weaponFlipped),
         this.pointer.x + this.cameras.main.worldView.x,
         this.pointer.y + this.cameras.main.worldView.y
       );
@@ -247,8 +261,8 @@ export default class PlayScene extends Phaser.Scene {
       let vy = v * uv.y;
 
       this.shoot(
-        this.player.x + this.weapon[this.weaponActive].getMuzX,
-        this.player.y + this.weapon[this.weaponActive].getMuzY,
+        this.player.x + this.weapon[this.weaponActive].getMuzX * (this.weaponFlipped),
+        this.player.y + this.weapon[this.weaponActive].getMuzY * (this.weaponFlipped),
         vx,
         vy,
         angle
