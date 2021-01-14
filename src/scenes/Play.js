@@ -22,6 +22,7 @@ export default class PlayScene extends Phaser.Scene {
     this.weaponFlipped = 0;
     this.projectiles = this.physics.add.group();
     this.grenades = this.physics.add.group();
+    this.grenadeCooldown = 0;
     
     this.weaponCooldown = 0;
     this.weaponActive = 0;
@@ -286,7 +287,7 @@ export default class PlayScene extends Phaser.Scene {
       let vx = v * uv.x;
       let vy = v * uv.y;
 
-      throwGrenade(this.player.x, this.player.y, vx, vy);
+      this.throwGrenade(this.player.x, this.player.y, vx, vy);
     }
   }
 
@@ -335,17 +336,17 @@ export default class PlayScene extends Phaser.Scene {
   }
 
   throwGrenade(x, y, vx, vy) {
-    if (grenadeCooldown === 0) {
-      createGrenade(x, y, vx, vy, 0);
-      grenadeCooldown = 70;
+    if (this.grenadeCooldown === 0) {
+      this.createGrenade(x, y, vx, vy, 0);
+      this.grenadeCooldown = 70;
     }
   }
 
   // Create grenade
   createGrenade(x, y, vx, vy) {
-    grenade = this.grenades.create(x, y, "grenade");
-    grenade.setVelocityX(vx * 0.5);
-    grenade.setVelocityY(vy * 0.5);
-    grenade.setBounce(0.3);
+    this.grenade = this.grenades.create(x, y, "grenade");
+    this.grenade.setVelocityX(vx * 0.5);
+    this.grenade.setVelocityY(vy * 0.5);
+    this.grenade.setBounce(0.3);
   }
 }
