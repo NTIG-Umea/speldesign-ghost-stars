@@ -24,6 +24,7 @@ export default class BootScene extends Phaser.Scene {
     this.load.image("pistol", images.pistol);
     this.load.image("uzi", images.uzi);
     this.load.image("shotgun", images.shotgun);
+    this.load.image("nisse", images.nisse);
 
     this.load.on("progress", function (progress) {
       bar.setScale(progress, 1);

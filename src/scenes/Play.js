@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import Weapon from "../Weapon";
+import Nisse from "../Nisse";
 
 export default class PlayScene extends Phaser.Scene {
   constructor() {
@@ -21,6 +22,7 @@ export default class PlayScene extends Phaser.Scene {
     this.weapon = [];
     this.projectiles = this.physics.add.group();
     this.grenades = this.physics.add.group();
+    this.Nissar = this.physics.add.group();
     
     this.weaponCooldown = 0;
     this.weaponActive = 0;
@@ -44,6 +46,14 @@ export default class PlayScene extends Phaser.Scene {
     }
 
     this.player = this.physics.add.sprite(128, 128, "player");
+      
+      var Nissar = this.physics.add.group({
+        classType: Nisse
+      });
+
+      Nissar.get(256, 128, 'Nisse');
+      
+      this.physics.add.collider(Nissar, this.walls);
 
     //Create boarder this.walls
     for (var i = 0; i < this.worldSize / this.tileSize; i++) {
