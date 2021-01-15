@@ -14,8 +14,6 @@ export default class PlayScene extends Phaser.Scene {
   create() {
     this.tileSize = 64;
     this.worldSize = 16 * 64;
-    this.floor = this.physics.add.staticGroup();
-    this.walls = this.physics.add.staticGroup();
     this.player;
     this.pointer = this.input.activePointer;
     this.weapon = [];
@@ -30,33 +28,19 @@ export default class PlayScene extends Phaser.Scene {
     this.projectileSpeed = 10;
     this.weaponSwitchCooldown = 0;
 
+    const map = this.make.tilemap({ key: 'map' });
+    const tileset = map.addTilesetImage('tileSprites', 'tiles');
+
+    const snow = map.createStaticLayer('Snow', tileset, 0, 0);
+    const floor = map.createStaticLayer('Floor', tileset, 0, 0);
+    const walls = map.createStaticLayer('Walls', tileset, 0, 0);
+    walls.setCollisionByExclusion(-1, true);
+
     //Camera
     this.cameras.main.setBounds(0, 0, this.worldSize, this.worldSize);
 
-    //Create this.floor tiles ovewr the whole map
-    for (var i = 0; i < Math.pow(this.worldSize / this.tileSize, 2); i++) {
-      this.floor.create(
-        this.tileSize / 2 +
-          (i -
-            Math.floor(i / (this.worldSize / this.tileSize)) * (this.worldSize / this.tileSize)) *
-            this.tileSize,
-        this.tileSize / 2 + Math.floor(i / (this.worldSize / this.tileSize)) * this.tileSize,
-        "floor"
-      );
-    }
-
     this.player = this.physics.add.sprite(128, 128, "player");
-
-    //Create boarder this.walls
-    for (var i = 0; i < this.worldSize / this.tileSize; i++) {
-      this.walls.create(this.tileSize / 2, i * this.tileSize, "wall"); //Left
-      this.walls.create(this.worldSize - this.tileSize / 2, i * this.tileSize, "wall"); //Right
-      this.walls.create(i * this.tileSize, this.tileSize / 2, "wall"); //Up
-      this.walls.create(i * this.tileSize, this.worldSize - this.tileSize / 2, "wall"); //Down
-    }
-
-    //Player stuff
-    this.physics.add.collider(this.player, this.walls);
+    this.physics.add.collider(this.player, walls);
 
     //Weapon sprites
     let newLength = this.weapon.push(
@@ -72,9 +56,6 @@ export default class PlayScene extends Phaser.Scene {
     this.pistolSprite.alpha = 0;
     this.uziSprite.alpha = 0;
     this.shotgunSprite.alpha = 0;
-
-    // Grenade physics
-    this.physics.add.collider(this.grenades, this.walls);
 
     //Player animations, turning, walking left and walking right.
     this.anims.create({
@@ -104,8 +85,8 @@ export default class PlayScene extends Phaser.Scene {
     });
 
     //Destroy projectiles when they hit this.walls
-    this.physics.add.overlap(this.projectiles, this.walls, this.destroyProjectile, null, this);
-
+    this.physics.add.collider(this.projectiles, walls, this.destroyProjectile, null, this);
+    
     //Player WASD movement
     this.keys = this.input.keyboard.addKeys({
       up: Phaser.Input.Keyboard.KeyCodes.W,
