@@ -48,8 +48,13 @@ export default class PlayScene extends Phaser.Scene {
     this.player = this.physics.add.sprite(128, 128, "player");
       
       var Nissar = this.physics.add.group({
-        classType: Nisse
+          classType: Nisse,
+          createCallback: function (go) {
+              var NisseGo = go;
+              NisseGo.body.onCollide = true;
+          }
       });
+  
 
       Nissar.get(256, 128, 'Nisse');
       
@@ -65,6 +70,7 @@ export default class PlayScene extends Phaser.Scene {
 
     //Player stuff
     this.physics.add.collider(this.player, this.walls);
+    this.physics.add.collider(this.player, Nissar);
 
     //Weapon sprites
     let newLength = this.weapon.push(

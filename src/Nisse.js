@@ -12,11 +12,24 @@ export default class Nisse extends Phaser.Physics.Arcade.Sprite
 {
     direction = Direction.RIGHT;
     
-    constructor(Scene, x, y, texture, frame)
+    constructor(x, y, texture, frame)
     {
-        super(scene, x, y, texture, frame)
+        super(x, y, texture, frame)
+
+        this.scene.physics.world.on(Phaser.Physics.Arcade.Events.TILE_COLLIDE);
+
     }
 
+    handleTileCollision(Phaser.GameObjects.GameObject, Phaser.Tilemaps.Tile)
+    {
+        if (go !== this) {
+            return;
+        }
+            var newDirection = Phaser.Math.Between(0, 3);
+            this.direction = newDirection;
+    }
+
+    
     preUpdate(t, dt)
     {
         super.preUpdate(t, dt);
