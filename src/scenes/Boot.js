@@ -24,7 +24,7 @@ export default class BootScene extends Phaser.Scene {
     this.load.image("pistol", images.pistol);
     this.load.image("uzi", images.uzi);
     this.load.image("shotgun", images.shotgun);
-    this.load.image("nisse", images.nisse);
+    this.load.image("nisse", images.Elf);
 
     this.load.image("tiles", "assets/tileSprites.png");
     this.load.tilemapTiledJSON("map", "levels/level1.json");

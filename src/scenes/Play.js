@@ -54,6 +54,11 @@ export default class PlayScene extends Phaser.Scene {
       },
     });
 
+    this.physics.add.collider(nissar, nissar);
+    this.physics.add.collider(nissar, this.grenades);
+    this.physics.add.collider(nissar, this.wall);
+    this.physics.add.collider(nissar, this.player);
+
     //Weapon sprites
     let newLength = this.weapon.push(
       (this.pistol = new Weapon("pistol", 35, 5, 60, -2.5, 15, 1)),
