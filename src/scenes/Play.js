@@ -14,8 +14,8 @@ export default class PlayScene extends Phaser.Scene {
 
   create() {
     this.tileSize = 64;
-    this.worldWidth = 16 * 128;
-    this.worldheight = 16 * 64;
+    this.worldWidth = 32 * 64;
+    this.worldHeight = 32 * 64;
     this.player;
     this.pointer = this.input.activePointer;
     this.weapon = [];
