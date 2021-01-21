@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import Weapon from "../Weapon";
+import Nisse from "../Nisse";
 
 export default class PlayScene extends Phaser.Scene {
   constructor() {
@@ -22,19 +23,19 @@ export default class PlayScene extends Phaser.Scene {
     this.projectiles = this.physics.add.group();
     this.grenades = this.physics.add.group();
     this.grenadeCooldown = 0;
-    
+
     this.weaponCooldown = 0;
     this.weaponActive = 0;
     this.playerSpeed = 3;
     this.projectileSpeed = 10;
     this.weaponSwitchCooldown = 0;
 
-    const map = this.make.tilemap({ key: 'map' });
-    const tileset = map.addTilesetImage('tileSprites', 'tiles');
+    const map = this.make.tilemap({ key: "map" });
+    const tileset = map.addTilesetImage("tileSprites", "tiles");
 
-    const snow = map.createStaticLayer('Snow', tileset, 0, 0);
-    const floor = map.createStaticLayer('Floor', tileset, 0, 0);
-    const walls = map.createStaticLayer('Walls', tileset, 0, 0);
+    const snow = map.createStaticLayer("Snow", tileset, 0, 0);
+    const floor = map.createStaticLayer("Floor", tileset, 0, 0);
+    const walls = map.createStaticLayer("Walls", tileset, 0, 0);
     walls.setCollisionByExclusion(-1, true);
 
     //Camera
@@ -42,6 +43,21 @@ export default class PlayScene extends Phaser.Scene {
 
     this.player = this.physics.add.sprite(128, 128, "player");
     this.physics.add.collider(this.player, walls);
+
+    var nissar = this.physics.add.group({
+      key: "nisse",
+      repeat: 5,
+      setXY: { x: 256, y: 128, stepX: 96 },
+      createCallback: function (go) {
+        var nisseGo = go;
+        nisseGo.body.onCollide = true;
+      },
+    });
+
+    this.physics.add.collider(nissar, nissar);
+    this.physics.add.collider(nissar, this.grenades);
+    this.physics.add.collider(nissar, this.wall);
+    this.physics.add.collider(nissar, this.player);
 
     //Weapon sprites
     let newLength = this.weapon.push(
@@ -87,7 +103,7 @@ export default class PlayScene extends Phaser.Scene {
 
     //Destroy projectiles when they hit this.walls
     this.physics.add.collider(this.projectiles, walls, this.destroyProjectile, null, this);
-    
+
     //Player WASD movement
     this.keys = this.input.keyboard.addKeys({
       up: Phaser.Input.Keyboard.KeyCodes.W,
@@ -120,12 +136,11 @@ export default class PlayScene extends Phaser.Scene {
       this.weaponSwitchCooldown--;
     }
 
-    if(this.pointer.x < this.player.x){
+    if (this.pointer.x < this.player.x) {
       this.weaponFlipped = -1;
       this.pistolSprite.flipX = true;
       this.uziSprite.flipX = true;
       this.shotgunSprite.flipX = true;
-
     } else {
       this.weaponFlipped = 1;
       this.pistolSprite.flipX = false;
@@ -135,21 +150,21 @@ export default class PlayScene extends Phaser.Scene {
 
     switch (this.weaponActive) {
       case 0:
-        this.pistolSprite.x = this.player.x + this.weapon[0].getOffX * (this.weaponFlipped);
+        this.pistolSprite.x = this.player.x + this.weapon[0].getOffX * this.weaponFlipped;
         this.pistolSprite.y = this.player.y + this.weapon[0].getOffY;
         this.pistolSprite.alpha = 1;
         break;
 
       //SMG
       case 1:
-        this.uziSprite.x = this.player.x + this.weapon[1].getOffX * (this.weaponFlipped);
+        this.uziSprite.x = this.player.x + this.weapon[1].getOffX * this.weaponFlipped;
         this.uziSprite.y = this.player.y + this.weapon[1].getOffY;
         this.uziSprite.alpha = 1;
         break;
 
       //Shotgun
       case 2:
-        this.shotgunSprite.x = this.player.x + this.weapon[2].getOffX * (this.weaponFlipped);
+        this.shotgunSprite.x = this.player.x + this.weapon[2].getOffX * this.weaponFlipped;
         this.shotgunSprite.y = this.player.y + this.weapon[2].getOffY;
         this.shotgunSprite.alpha = 1;
         break;
@@ -229,8 +244,8 @@ export default class PlayScene extends Phaser.Scene {
     //if the mouse is clicked -> shoot
     if (this.pointer.isDown) {
       let angle = Phaser.Math.Angle.Between(
-        this.player.x + this.weapon[this.weaponActive].getMuzX * (this.weaponFlipped),
-        this.player.y + this.weapon[this.weaponActive].getMuzY * (this.weaponFlipped),
+        this.player.x + this.weapon[this.weaponActive].getMuzX * this.weaponFlipped,
+        this.player.y + this.weapon[this.weaponActive].getMuzY * this.weaponFlipped,
         this.pointer.x + this.cameras.main.worldView.x,
         this.pointer.y + this.cameras.main.worldView.y
       );
@@ -244,8 +259,8 @@ export default class PlayScene extends Phaser.Scene {
       let vy = v * uv.y;
 
       this.shoot(
-        this.player.x + this.weapon[this.weaponActive].getMuzX * (this.weaponFlipped),
-        this.player.y + this.weapon[this.weaponActive].getMuzY * (this.weaponFlipped),
+        this.player.x + this.weapon[this.weaponActive].getMuzX * this.weaponFlipped,
+        this.player.y + this.weapon[this.weaponActive].getMuzY * this.weaponFlipped,
         vx,
         vy,
         angle
