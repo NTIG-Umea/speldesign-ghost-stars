@@ -15,7 +15,7 @@ export default class PlayScene extends Phaser.Scene {
   create() {
     this.tileSize = 64;
     this.worldWidth = 16 * 128;
-    this.worldheight = 16 * 64;
+    this.worldHeight = 16 * 64;
     this.player;
     this.pointer = this.input.activePointer;
     this.weapon = [];
@@ -41,8 +41,8 @@ export default class PlayScene extends Phaser.Scene {
 
     //Camera
     this.cameras.main.setBounds(0, 0, this.worldWidth, this.worldHeight);
-
-    this.player = this.physics.add.sprite(128, 128, "player");
+    
+    this.player = this.physics.add.sprite(430, 350, "player");
     this.physics.add.collider(this.player, walls);
 
     var nissar = this.physics.add.group({
