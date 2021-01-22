@@ -14,8 +14,8 @@ export default class PlayScene extends Phaser.Scene {
 
   create() {
     this.tileSize = 64;
-    this.worldWidth = 16 * 128;
-    this.worldHeight = 16 * 64;
+    this.worldWidth = 32 * 64;
+    this.worldHeight = 32 * 64;
     this.player;
     this.pointer = this.input.activePointer;
     this.weapon = [];
@@ -84,6 +84,8 @@ export default class PlayScene extends Phaser.Scene {
     teleporterObjects.forEach(teleporterObject => {
       const teleporter = this.teleporters.create(teleporterObject.x, teleporterObject.y - 96, 'fireplace').setOrigin(0, 0);
     });
+    
+    this.physics.add.collider(this.player, this.teleporters, this.playerTeleport, null, this);
 
     //Player animations, turning, walking left and walking right.
     this.anims.create({
@@ -306,6 +308,10 @@ export default class PlayScene extends Phaser.Scene {
       }
       this.weaponCooldown = this.weapon[this.weaponActive].getCooldown;
     }
+  }
+
+  playerTeleport(player, teleporterObject) {
+    console.log(teleporterObject);
   }
 
   //Change how "spread" works in the future
