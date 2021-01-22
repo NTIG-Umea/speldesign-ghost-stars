@@ -36,7 +36,7 @@ export default class PlayScene extends Phaser.Scene {
     const snow = map.createStaticLayer("Snow", tileset, 0, 0);
     const floor = map.createStaticLayer("Floor", tileset, 0, 0);
     const walls = map.createStaticLayer("Walls", tileset, 0, 0);
-    const goal = map.createFromObjects("Goal");
+
     walls.setCollisionByExclusion(-1, true);
 
     //Camera
@@ -74,6 +74,16 @@ export default class PlayScene extends Phaser.Scene {
     this.pistolSprite.alpha = 0;
     this.uziSprite.alpha = 0;
     this.shotgunSprite.alpha = 0;
+
+    
+    this.teleporters = this.physics.add.group({
+      allowGravity: false,
+      immovable: true
+    });
+    const teleporterObjects = map.getObjectLayer('Teleporters')['objects'];
+    teleporterObjects.forEach(teleporterObject => {
+      const teleporter = this.teleporters.create(teleporterObject.x, teleporterObject.y - 96, 'fireplace').setOrigin(0, 0);
+    });
 
     //Player animations, turning, walking left and walking right.
     this.anims.create({

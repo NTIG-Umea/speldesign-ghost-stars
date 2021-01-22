@@ -1,11 +1,4 @@
 { "compressionlevel":-1,
- "editorsettings":
-    {
-     "export":
-        {
-         "target":"..\/..\/..\/Code\/Code\/speldesign-ghost-stars\/static\/levels"
-        }
-    },
  "height":64,
  "infinite":false,
  "layers":[
@@ -54,19 +47,48 @@
         {
          "draworder":"topdown",
          "id":7,
-         "name":"Goal",
+         "name":"Teleporters",
          "objects":[
                 {
                  "gid":8,
                  "height":32,
                  "id":2,
                  "name":"",
+                 "properties":[
+                        {
+                         "name":"Target",
+                         "type":"object",
+                         "value":3
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":32,
                  "x":1192,
                  "y":1686
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":8,
+         "name":"Destinations",
+         "objects":[
+                {
+                 "gid":4,
+                 "height":32,
+                 "id":3,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":1588,
+                 "y":1098
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -97,8 +119,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":8,
- "nextobjectid":3,
+ "nextlayerid":9,
+ "nextobjectid":4,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.4.3",
@@ -107,7 +129,7 @@
         {
          "columns":4,
          "firstgid":1,
-         "image":"..\/..\/..\/Code\/speldesign-ghost-stars\/static\/assets\/tileSprites.png",
+         "image":"..\/assets\/tileSprites.png",
          "imageheight":64,
          "imagewidth":128,
          "margin":0,

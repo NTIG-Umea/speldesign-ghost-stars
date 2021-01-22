@@ -26,8 +26,9 @@ export default class BootScene extends Phaser.Scene {
     this.load.image("shotgun", images.shotgun);
     this.load.image("nisse", images.Elf);
 
+    this.load.image("fireplace", "assets/Fireplace.png");
     this.load.image("tiles", "assets/tileSprites.png");
-    this.load.tilemapTiledJSON("map", "levels/level1.json");
+    this.load.tilemapTiledJSON("map", "levels/map.json");
 
     this.load.on("progress", function (progress) {
       bar.setScale(progress, 1);
