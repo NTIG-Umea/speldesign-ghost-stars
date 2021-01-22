@@ -32,11 +32,11 @@ var Direction;
             this.direction = randomDirection(this.direction);
           },
           loop: true
-        });
+        }); 
       }
 
     // handleTileCollision() {
-    //   if (go !== this) {
+    //     if (go !== this) {
     //     return;
     //   } else {
     //     this.direction = randomDirection(this.direction);

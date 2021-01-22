@@ -136,7 +136,7 @@ export default class PlayScene extends Phaser.Scene {
      for (let i = 0; i < 1; i++) {
       nisse.x += Math.random() < 0.5 ? -1 : 1;
       nisse.y += Math.random() < 0.5 ? -1 : 1;
-     }
+     } 
     });
 
     if (this.weaponCooldown > 0) {
