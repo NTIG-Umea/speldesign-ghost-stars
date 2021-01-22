@@ -38,13 +38,13 @@ export default class PlayScene extends Phaser.Scene {
     const walls = map.createStaticLayer("Walls", tileset, 0, 0);
     walls.setCollisionByExclusion(-1, true);
 
-    //Camera
+    //Camera  
     this.cameras.main.setBounds(0, 0, this.worldWidth, this.worldHeight);
 
     this.player = this.physics.add.sprite(128, 128, "player");
     this.physics.add.collider(this.player, walls);
 
-    var nissar = this.physics.add.group({
+    this.nissar = this.physics.add.group({
       key: "nisse",
       repeat: 5,
       setXY: { x: 256, y: 128, stepX: 96 },
@@ -53,12 +53,13 @@ export default class PlayScene extends Phaser.Scene {
         nisseGo.body.onCollide = true;
       },
     });
+    
+    this.physics.add.collider(this.nissar, this.nissar);
+    this.physics.add.collider(this.nissar, this.grenades);
+    this.physics.add.collider(this.nissar, walls);
+    this.physics.add.collider(this.nissar, this.player);
 
-    this.physics.add.collider(nissar, nissar);
-    this.physics.add.collider(nissar, this.grenades);
-    this.physics.add.collider(nissar, this.wall);
-    this.physics.add.collider(nissar, this.player);
-
+    this.physics.add.collider(this.grenades, walls);
     //Weapon sprites
     let newLength = this.weapon.push(
       (this.pistol = new Weapon("pistol", 35, 5, 60, -2.5, 15, 1)),
@@ -126,6 +127,18 @@ export default class PlayScene extends Phaser.Scene {
   }
 
   update() {
+
+    this.nissar.children.iterate(function (nisse) {
+     // console.log(nisse);
+     nisse.x += 1;
+     nisse.y += 1;
+     
+     for (let i = 0; i < 1; i++) {
+      nisse.x += Math.random() < 0.5 ? -1 : 1;
+      nisse.y += Math.random() < 0.5 ? -1 : 1;
+     }
+    });
+
     if (this.weaponCooldown > 0) {
       this.weaponCooldown--;
     }
@@ -265,6 +278,7 @@ export default class PlayScene extends Phaser.Scene {
         vy,
         angle
       );
+
     }
 
     // G is pressed -> throw grenade
