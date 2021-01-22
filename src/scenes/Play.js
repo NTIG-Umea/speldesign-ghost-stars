@@ -14,8 +14,8 @@ export default class PlayScene extends Phaser.Scene {
 
   create() {
     this.tileSize = 64;
-    this.worldWidth = 16 * 128;
-    this.worldheight = 16 * 64;
+    this.worldWidth = 32 * 64;
+    this.worldHeight = 32 * 64;
     this.player;
     this.pointer = this.input.activePointer;
     this.weapon = [];
@@ -36,12 +36,13 @@ export default class PlayScene extends Phaser.Scene {
     const snow = map.createStaticLayer("Snow", tileset, 0, 0);
     const floor = map.createStaticLayer("Floor", tileset, 0, 0);
     const walls = map.createStaticLayer("Walls", tileset, 0, 0);
+
     walls.setCollisionByExclusion(-1, true);
 
     //Camera
     this.cameras.main.setBounds(0, 0, this.worldWidth, this.worldHeight);
-
-    this.player = this.physics.add.sprite(128, 128, "player");
+    
+    this.player = this.physics.add.sprite(430, 350, "player");
     this.physics.add.collider(this.player, walls);
 
     var nissar = this.physics.add.group({
@@ -73,6 +74,18 @@ export default class PlayScene extends Phaser.Scene {
     this.pistolSprite.alpha = 0;
     this.uziSprite.alpha = 0;
     this.shotgunSprite.alpha = 0;
+
+    
+    this.teleporters = this.physics.add.group({
+      allowGravity: false,
+      immovable: true
+    });
+    const teleporterObjects = map.getObjectLayer('Teleporters')['objects'];
+    teleporterObjects.forEach(teleporterObject => {
+      const teleporter = this.teleporters.create(teleporterObject.x, teleporterObject.y - 96, 'fireplace').setOrigin(0, 0);
+    });
+    
+    this.physics.add.collider(this.player, this.teleporters, this.playerTeleport, null, this);
 
     //Player animations, turning, walking left and walking right.
     this.anims.create({
@@ -295,6 +308,10 @@ export default class PlayScene extends Phaser.Scene {
       }
       this.weaponCooldown = this.weapon[this.weaponActive].getCooldown;
     }
+  }
+
+  playerTeleport(player, teleporterObject) {
+    console.log(teleporterObject);
   }
 
   //Change how "spread" works in the future
