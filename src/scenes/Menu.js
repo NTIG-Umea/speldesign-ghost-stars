@@ -6,7 +6,7 @@ export default class MenuScene extends Phaser.Scene {
   }
 
   create () {
-    this.add.text(400, 200, 'Phaser 3 with Parcel', {
+    this.add.text(400, 200, 'Nisse Headpopper', {
       align: 'center',
       fill: 'white',
       fontFamily: 'sans-serif',
@@ -14,7 +14,7 @@ export default class MenuScene extends Phaser.Scene {
     })
       .setOrigin(0.5, 0);
 
-      const startButton = this.add.text(400, 300, '< play >', {
+      const startButton = this.add.text(400, 300, '< START >', {
         align: 'center',
         fill: 'white',
         fontFamily: 'sans-serif',
