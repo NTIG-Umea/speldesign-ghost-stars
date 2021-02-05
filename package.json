@@ -14,6 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "assets": "^3.0.1",
+    "axios": "^0.21.1",
     "phaser": "^3.20.1"
   },
   "devDependencies": {
